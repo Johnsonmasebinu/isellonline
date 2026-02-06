@@ -21,23 +21,17 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock /var/www/html/
-
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy package files
-COPY package.json package-lock.json /var/www/html/
-
-# Install Node.js dependencies and build assets
-RUN npm install && npm run build
-
 # Copy application code
 COPY . /var/www/html
 
 # Copy existing application directory permissions
 COPY --chown=www-data:www-data . /var/www/html
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Install Node.js dependencies and build assets
+RUN npm install && npm run build
 
 # Create .env file if it doesn't exist
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
