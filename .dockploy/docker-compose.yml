@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  isellonline-app:
+    image: ${DOCKER_IMAGE}
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=${MYSQL_HOST}
+      - DB_PORT=3306
+      - DB_DATABASE=${MYSQL_DATABASE}
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - APP_URL=${APP_URL}
+      - APP_KEY=${APP_KEY}
+      - SUPPORT_PHONE=${SUPPORT_PHONE}
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL}
+      - TAGLINE=${TAGLINE}
+    ports:
+      - "80:80"
+    depends_on:
+      - isellonline-mysql
+    volumes:
+      - storage:/var/www/html/storage
+    networks:
+      - isellonline
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  isellonline-mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - isellonline
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  mysql_data:
+  storage:
+
+networks:
+  isellonline:
+    driver: bridge

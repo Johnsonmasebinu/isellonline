@@ -1,0 +1,10 @@
+openapi: 3.0.3
+info:
+  title: 'Laravel API Documentation'
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost'
+tags: []
+paths: []
