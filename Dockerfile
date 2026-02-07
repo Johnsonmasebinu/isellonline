@@ -64,6 +64,13 @@ EXPOSE 80
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
+# Ensure .env exists\n\
+if [ ! -f .env ]; then\n\
+    echo "Creating .env from .env.example..."\n\
+    cp .env.example .env\n\
+fi\n\
+\n\
+# Function to safely update .env\n\
 update_env() {\n\
     local key=$1\n\
     local value=$2\n\
@@ -74,43 +81,47 @@ update_env() {\n\
     fi\n\
 }\n\
 \n\
-if [ ! -f .env ]; then\n\
-    cp .env.example .env\n\
-fi\n\
-\n\
-# Map environment variables to .env\n\
+# Inject environment variables into .env\n\
+echo "Configuring .env file..."\n\
 update_env "DB_HOST" "${DB_HOST:-mysql}"\n\
 update_env "DB_PORT" "${DB_PORT:-3306}"\n\
 update_env "DB_DATABASE" "${DB_DATABASE:-isellonline}"\n\
 update_env "DB_USERNAME" "${DB_USERNAME:-isellonline_user}"\n\
 update_env "DB_PASSWORD" "${DB_PASSWORD:-isellonline_password}"\n\
+update_env "APP_URL" "${APP_URL:-https://isellonline.website}"\n\
+update_env "APP_ENV" "${APP_ENV:-production}"\n\
 \n\
-echo "--- Connection Debug ---"\n\
-echo "Target: ${DB_HOST:-mysql}:${DB_PORT:-3306}"\n\
-echo "User: ${DB_USERNAME:-isellonline_user}"\n\
+# Ensure APP_KEY exists\n\
+if ! grep -q "^APP_KEY=base64" .env; then\n\
+    echo "Generating APP_KEY..."\n\
+    php artisan key:generate --force\n\
+fi\n\
 \n\
-for i in {1..30}; do\n\
-    echo "Checking port ${DB_PORT:-3306} on ${DB_HOST:-mysql} (attempt $i/30)..."\n\
-    if nc -z "${DB_HOST:-mysql}" "${DB_PORT:-3306}"; then\n\
-        echo "Port is open! Checking credentials..."\n\
-        if mysqladmin ping -h"${DB_HOST:-mysql}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME:-isellonline_user}" -p"${DB_PASSWORD:-isellonline_password}" --silent; then\n\
-            echo "Access Granted! MySQL is ready."\n\
-            break\n\
-        else\n\
-            echo "Access Denied: Check your DB_USERNAME and DB_PASSWORD variables."\n\
-        fi\n\
-    else\n\
-        echo "Port is closed: MySQL container may still be starting or host name is wrong."\n\
-    fi\n\
+echo "Waiting for MySQL connection..."\n\
+# Use PHP to check DB connection\n\
+php -r "\n\
+\$host = \"${DB_HOST:-mysql}\";\n\
+\$user = \"${DB_USERNAME:-isellonline_user}\";\n\
+\$pass = \"${DB_PASSWORD:-isellonline_password}\";\n\
+\$db   = \"${DB_DATABASE:-isellonline}\";\n\
 \n\
-    if [ $i -eq 30 ]; then\n\
-        echo "Exceeded max attempts. Exiting."\n\
-        exit 1\n\
-    fi\n\
-    sleep 2\n\
-done\n\
+for (\$i = 0; \$i < 30; \$i++) {\n\
+    try {\n\
+        \$pdo = new PDO(\"mysql:host=\$host;port=3306\", \$user, \$pass);\n\
+        echo \"Connected successfully to MySQL\\n\";\n\
+        exit(0);\n\
+    } catch (PDOException \$e) {\n\
+        echo \"Attempt \" . (\$i+1) . \": MySQL not ready... \" . \$e->getMessage() . \"\\n\";\n\
+        sleep(2);\n\
+    }\n\
+}\n\
+exit(1);\n\
+"\n\
 \n\
+echo "Running migrations..."\n\
 php artisan migrate --force\n\
+\n\
+echo "Caching configuration..."\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
 \n\
