@@ -20,7 +20,6 @@ services:
       - APP_URL=https://isellonline.website
     volumes:
       - ./storage:/var/www/html/storage
-      - mysql_data:/var/lib/mysql
     restart: unless-stopped
 
 volumes:

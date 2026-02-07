@@ -110,7 +110,7 @@ if ! grep -q \"^APP_KEY=base64\" .env; then\n\
     php artisan key:generate --force\n\
 fi\n\
 \n\
-echo \"Waiting for Database at \$DB_HOST...\"\n\
+echo \"Waiting for Database at \$DB_HOST:\$DB_PORT...\"\n\
 \n\
 php -r \"\n\
 \\\$host = getenv('DB_HOST');\n\
