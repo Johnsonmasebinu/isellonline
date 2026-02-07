@@ -20,8 +20,10 @@ services:
       - APP_URL=https://isellonline.website
     depends_on:
       - db
-    links:
-      - db
+    networks:
+      isell_net:
+        aliases:
+          - app
     volumes:
       - ./storage:/var/www/html/storage
 
@@ -42,6 +44,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+    networks:
+      isell_net:
+        aliases:
+          - db
+
+networks:
+  isell_net:
+    driver: bridge
 
 volumes:
   mysql_data:
