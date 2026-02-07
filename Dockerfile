@@ -61,86 +61,63 @@ RUN echo '<VirtualHost *:80>\n\
 EXPOSE 80
 
 # Create startup script
-RUN echo '#!/bin/bash\n\
+RUN printf "#!/bin/bash\n\
 set -e\n\
 \n\
-# Give Docker DNS a moment to settle\n\
 sleep 2\n\
 \n\
-# Ensure .env exists\n\
 if [ ! -f .env ]; then\n\
-    echo "Creating .env from .env.example..."\n\
     cp .env.example .env\n\
 fi\n\
 \n\
-# Function to safely update .env\n\
 update_env() {\n\
-    local key=$1\n\
-    local value=$2\n\
-    if grep -q "^${key}=" .env; then\n\
-        sed -i "s|^${key}=.*|${key}=${value}|" .env\n\
+    local key=\$1\n\
+    local value=\$2\n\
+    if grep -q \"^\${key}=\" .env; then\n\
+        sed -i \"s|^\${key}=.*|\${key}=\${value}|\" .env\n\
     else\n\
-        echo "${key}=${value}" >> .env\n\
+        echo \"\${key}=\${value}\" >> .env\n\
     fi\n\
 }\n\
 \n\
-# Inject environment variables into .env\n\
-echo "Configuring .env file..."\n\
-update_env "DB_HOST" "${DB_HOST:-mysql}"\n\
-update_env "DB_PORT" "${DB_PORT:-3306}"\n\
-update_env "DB_DATABASE" "${DB_DATABASE:-isellonline}"\n\
-update_env "DB_USERNAME" "${DB_USERNAME:-isellonline_user}"\n\
-update_env "DB_PASSWORD" "${DB_PASSWORD:-isellonline_password}"\n\
-update_env "APP_URL" "${APP_URL:-https://isellonline.website}"\n\
-update_env "APP_ENV" "${APP_ENV:-production}"\n\
+echo \"Configuring .env file...\"\n\
+update_env \"DB_HOST\" \"\${DB_HOST:-mysql}\"\n\
+update_env \"DB_PORT\" \"\${DB_PORT:-3306}\"\n\
+update_env \"DB_DATABASE\" \"\${DB_DATABASE:-isellonline}\"\n\
+update_env \"DB_USERNAME\" \"\${DB_USERNAME:-isellonline_user}\"\n\
+update_env \"DB_PASSWORD\" \"\${DB_PASSWORD:-isellonline_password}\"\n\
+update_env \"APP_URL\" \"\${APP_URL:-https://isellonline.website}\"\n\
 \n\
-# Ensure APP_KEY exists\n\
-if ! grep -q "^APP_KEY=base64" .env; then\n\
-    echo "Generating APP_KEY..."\n\
+if ! grep -q \"^APP_KEY=base64\" .env; then\n\
     php artisan key:generate --force\n\
 fi\n\
 \n\
-echo "Waiting for MySQL connection at host: ${DB_HOST:-mysql} ..."\n\
+echo \"Waiting for MySQL at \${DB_HOST:-mysql}...\"\n\
 \n\
-# Use PHP to check DB connection with extra debugging\n\
-php -r "\n\
-\$host = \"${DB_HOST:-mysql}\";\n\
-\$user = \"${DB_USERNAME:-isellonline_user}\";\n\
-\$pass = \"${DB_PASSWORD:-isellonline_password}\";\n\
-\$db   = \"${DB_DATABASE:-isellonline}\";\n\
+php -r \"\n\
+\\\$host = getenv('DB_HOST') ?: 'mysql';\n\
+\\\$user = getenv('DB_USERNAME') ?: 'isellonline_user';\n\
+\\\$pass = getenv('DB_PASSWORD') ?: 'isellonline_password';\n\
 \n\
-for (\$i = 0; \$i < 30; \$i++) {\n\
-    // Check if host resolves\n\
-    \$ip = gethostbyname(\$host);\n\
-    if (\$ip === \$host) {\n\
-       echo \"DNS Error: Could not resolve hostname \$host to an IP.\\n\";\n\
-       echo \"Checking /etc/hosts contents:\\n\";\n\
-       echo file_get_contents(\"/etc/hosts\");\n\
-    } else {\n\
-       echo \"DNS Success: Host \$host resolved to \$ip\\n\";\n\
-    }\n\
-\n\
+for (\\\$i = 0; \\\$i < 60; \\\$i++) {\n\
     try {\n\
-        \$pdo = new PDO(\"mysql:host=\$host;port=3306\", \$user, \$pass);\n\
-        echo \"Connected successfully to MySQL!\\n\";\n\
+        \\\$pdo = new PDO(\\\"mysql:host=\\\$host;port=3306\\\", \\\$user, \\\$pass);\n\
+        echo \\\"Connected successfully!\\\\n\\\";\n\
         exit(0);\n\
-    } catch (PDOException \$e) {\n\
-        echo \"Attempt \" . (\$i+1) . \": MySQL not ready... \" . \$e->getMessage() . \"\\n\";\n\
+    } catch (PDOException \\\$e) {\n\
+        echo \\\"Attempt \\\" . (\\\$i+1) . \\\": \\\" . \\\$e->getMessage() . \\\"\\\\n\\\";\n\
         sleep(2);\n\
     }\n\
 }\n\
 exit(1);\n\
-"\n\
+\"\n\
 \n\
-echo "Running migrations..."\n\
 php artisan migrate --force\n\
-\n\
-echo "Caching configuration..."\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
 \n\
-echo "Starting Apache..."\n\
-apache2-foreground' > /usr/local/bin/start.sh
+echo \"Starting Management...\"\n\
+apache2-foreground" > /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh
 
