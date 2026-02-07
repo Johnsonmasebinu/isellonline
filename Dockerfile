@@ -64,11 +64,32 @@ EXPOSE 80
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
+# Function to update .env values\n\
+update_env() {\n\
+    local key=$1\n\
+    local value=$2\n\
+    if grep -q "^${key}=" .env; then\n\
+        sed -i "s|^${key}=.*|${key}=${value}|" .env\n\
+    else\n\
+        echo "${key}=${value}" >> .env\n\
+    fi\n\
+}\n\
+\n\
 # Ensure .env file exists\n\
 if [ ! -f .env ]; then\n\
     echo "Creating .env file from example..."\n\
     cp .env.example .env\n\
 fi\n\
+\n\
+# Update .env with Docker environment variables\n\
+echo "Updating .env with environment variables..."\n\
+update_env "DB_HOST" "${DB_HOST:-mysql}"\n\
+update_env "DB_PORT" "${DB_PORT:-3306}"\n\
+update_env "DB_DATABASE" "${DB_DATABASE:-isellonline}"\n\
+update_env "DB_USERNAME" "${DB_USERNAME:-isellonline_user}"\n\
+update_env "DB_PASSWORD" "${DB_PASSWORD:-isellonline_password}"\n\
+update_env "APP_URL" "${APP_URL:-https://isellonline.website}"\n\
+update_env "APP_ENV" "${APP_ENV:-production}"\n\
 \n\
 # Generate app key if not set\n\
 if ! grep -q "^APP_KEY=" .env || grep -q "^APP_KEY=$" .env; then\n\
@@ -77,20 +98,21 @@ if ! grep -q "^APP_KEY=" .env || grep -q "^APP_KEY=$" .env; then\n\
 fi\n\
 \n\
 # Wait for MySQL to be ready\n\
-echo "Waiting for MySQL..."\n\
+echo "Waiting for MySQL at ${DB_HOST:-mysql}..."\n\
 for i in {1..30}; do\n\
-    if mysqladmin ping -h"${DB_HOST:-mysql}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME:-isellonline_user}" -p"${DB_PASSWORD:-isellonline_password}" --silent 2>/dev/null; then\n\
+    # Try to connect using mysql client\n\
+    if mysqladmin ping -h"${DB_HOST:-mysql}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME:-isellonline_user}" -p"${DB_PASSWORD:-isellonline_password}" --silent; then\n\
         echo "MySQL is up - executing migrations"\n\
         break\n\
     fi\n\
     echo "MySQL is unavailable - attempt $i/30 - sleeping"\n\
     sleep 2\n\
+    \n\
+    if [ $i -eq 30 ]; then\n\
+        echo "MySQL connection failed after 30 attempts"\n\
+        exit 1\n\
+    fi\n\
 done\n\
-\n\
-if [ $i -eq 30 ]; then\n\
-    echo "MySQL connection failed after 30 attempts"\n\
-    exit 1\n\
-fi\n\
 \n\
 # Run migrations\n\
 php artisan migrate --force\n\
