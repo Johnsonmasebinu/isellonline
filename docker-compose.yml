@@ -12,46 +12,16 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
-      - DB_HOST=db
+      - DB_HOST=127.0.0.1
       - DB_PORT=3306
       - DB_DATABASE=isellonline
       - DB_USERNAME=isellonline_user
       - DB_PASSWORD=isellonline_password
       - APP_URL=https://isellonline.website
-    depends_on:
-      - db
-    networks:
-      isell_net:
-        aliases:
-          - app
     volumes:
       - ./storage:/var/www/html/storage
-
-  db:
-    container_name: isellonline_db
-    image: mysql:8.0
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=isellonline
-      - MYSQL_USER=isellonline_user
-      - MYSQL_PASSWORD=isellonline_password
-    ports:
-      - "3306:3306"
-    volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
-    networks:
-      isell_net:
-        aliases:
-          - db
-
-networks:
-  isell_net:
-    driver: bridge
+    restart: unless-stopped
 
 volumes:
   mysql_data:

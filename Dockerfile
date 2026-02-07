@@ -4,7 +4,7 @@ FROM php:8.2-apache
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies
+# Install system dependencies including MySQL server
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -15,9 +15,15 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     nodejs \
-    npm \ 
+    npm \
     default-mysql-client \
+    mysql-server \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Configure MySQL to run in the same container
+RUN mkdir -p /var/run/mysqld && \
+    chown mysql:mysql /var/run/mysqld && \
+    chmod 755 /var/run/mysqld
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -64,6 +70,18 @@ EXPOSE 80
 RUN printf "#!/bin/bash\n\
 set -e\n\
 \n\
+# Start MySQL service\n\
+service mysql start\n\
+sleep 3\n\
+\n\
+# Configure MySQL if not already configured\n\
+if [ ! -d /var/lib/mysql/mysql ]; then\n\
+    mysql -u root -e \"CREATE DATABASE IF NOT EXISTS isellonline;\"\n\
+    mysql -u root -e \"CREATE USER IF NOT EXISTS 'isellonline_user'@'localhost' IDENTIFIED BY 'isellonline_password';\"\n\
+    mysql -u root -e \"GRANT ALL PRIVILEGES ON isellonline.* TO 'isellonline_user'@'localhost';\"\n\
+    mysql -u root -e \"FLUSH PRIVILEGES;\"\n\
+fi\n\
+\n\
 sleep 2\n\
 \n\
 if [ ! -f .env ]; then\n\
@@ -81,14 +99,13 @@ update_env() {\n\
 }\n\
 \n\
 # Set default database host if not provided\n\
-# Support both DB_HOST and MYSQL_HOST for compatibility\n\
-# For docker-compose deployments, default to 'db'\n\
-# For other deployments (like Dockploy), use the provided host\n\
+# For single-container deployments, use localhost\n\
+# For multi-container deployments, use the provided host\n\
 if [ -z \"\$DB_HOST\" ]; then\n\
     if [ -n \"\$MYSQL_HOST\" ]; then\n\
         export DB_HOST=\"\$MYSQL_HOST\"\n\
     else\n\
-        export DB_HOST=\"db\"\n\
+        export DB_HOST=\"127.0.0.1\"\n\
     fi\n\
 fi\n\
 \n\

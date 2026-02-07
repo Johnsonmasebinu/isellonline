@@ -24,10 +24,10 @@ ISellOnline is an AI-powered WhatsApp-first e-commerce platform that allows user
 
 - **Backend**: Laravel 11 (PHP 8.2)
 - **Frontend**: Vue.js 3 with Vite
-- **Database**: MySQL 8.0
+- **Database**: MySQL 8.0 (runs in same container)
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide Vue
-- **Deployment**: Docker + Dockploy
+- **Deployment**: Docker (single container)
 
 ## 📋 Prerequisites
 
@@ -76,11 +76,22 @@ ISellOnline is an AI-powered WhatsApp-first e-commerce platform that allows user
    - Frontend: http://localhost
    - API: http://localhost/api
 
-## 🐳 Production Deployment (Dockploy)
+## 🐳 Production Deployment
 
-### 1. Environment Variables
+### Single Container Deployment (Recommended)
 
-Create a `.env` file in your Dockploy project with:
+The application now runs MySQL in the same container for simplified deployment:
+
+```bash
+# Build and run with docker-compose
+docker-compose -f docker-compose.prod.yml up -d
+
+# Or deploy directly with Docker
+docker build -t isellonline .
+docker run -d -p 80:80 -v mysql_data:/var/lib/mysql isellonline
+```
+
+### Environment Variables
 
 ```env
 # Application
@@ -90,23 +101,20 @@ SUPPORT_PHONE=+1234567890
 SUPPORT_EMAIL=support@isellonline.website
 TAGLINE="AI- WhatsApp First E-commerce Creator"
 
-# Database (use either DB_* or MYSQL_* naming)
-DB_HOST=your-database-service-name  # or MYSQL_HOST
-DB_DATABASE=isellonline             # or MYSQL_DATABASE
-DB_USERNAME=isellonline_user        # or MYSQL_USER
-DB_PASSWORD=your-secure-password    # or MYSQL_PASSWORD
-MYSQL_ROOT_PASSWORD=your-secure-root-password
-
-# Docker
-DOCKER_IMAGE=your-registry/isellonline:latest
+# Database (MySQL runs in same container)
+DB_HOST=127.0.0.1
+DB_DATABASE=isellonline
+DB_USERNAME=isellonline_user
+DB_PASSWORD=isellonline_password
 ```
 
-### 2. Deploy with Dockploy
+### Multi-Container Deployment (Dockploy)
 
-1. Connect your GitHub repository to Dockploy
-2. Use the `.dockploy/docker-compose.yml` configuration
-3. Set environment variables in Dockploy dashboard
-4. Deploy!
+If you prefer separate containers, set the database service name:
+
+```env
+DB_HOST=your-database-service-name
+```
 
 ### 3. Post-Deployment
 

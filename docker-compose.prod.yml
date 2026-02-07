@@ -6,38 +6,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "80:80"
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
-      - DB_HOST=db
+      - DB_HOST=127.0.0.1
       - DB_PORT=3306
       - DB_DATABASE=isellonline
       - DB_USERNAME=isellonline_user
-      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_PASSWORD=isellonline_password
       - APP_URL=https://isellonline.website
       - APP_KEY=${APP_KEY}
-    depends_on:
-      - db
     volumes:
       - ./storage:/var/www/html/storage
-    restart: unless-stopped
-
-  db:
-    container_name: isellonline_db_prod
-    image: mysql:8.0
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=isellonline
-      - MYSQL_USER=isellonline_user
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-    volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
     restart: unless-stopped
 
 volumes:
