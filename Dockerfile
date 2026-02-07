@@ -64,7 +64,6 @@ EXPOSE 80
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
-# Function to update .env values\n\
 update_env() {\n\
     local key=$1\n\
     local value=$2\n\
@@ -75,55 +74,47 @@ update_env() {\n\
     fi\n\
 }\n\
 \n\
-# Ensure .env file exists\n\
 if [ ! -f .env ]; then\n\
-    echo "Creating .env file from example..."\n\
     cp .env.example .env\n\
 fi\n\
 \n\
-# Update .env with Docker environment variables\n\
-echo "Updating .env with environment variables..."\n\
+# Map environment variables to .env\n\
 update_env "DB_HOST" "${DB_HOST:-mysql}"\n\
 update_env "DB_PORT" "${DB_PORT:-3306}"\n\
 update_env "DB_DATABASE" "${DB_DATABASE:-isellonline}"\n\
 update_env "DB_USERNAME" "${DB_USERNAME:-isellonline_user}"\n\
 update_env "DB_PASSWORD" "${DB_PASSWORD:-isellonline_password}"\n\
-update_env "APP_URL" "${APP_URL:-https://isellonline.website}"\n\
-update_env "APP_ENV" "${APP_ENV:-production}"\n\
 \n\
-# Generate app key if not set\n\
-if ! grep -q "^APP_KEY=" .env || grep -q "^APP_KEY=$" .env; then\n\
-    echo "Generating application key..."\n\
-    php artisan key:generate --force\n\
-fi\n\
+echo "--- Connection Debug ---"\n\
+echo "Target: ${DB_HOST:-mysql}:${DB_PORT:-3306}"\n\
+echo "User: ${DB_USERNAME:-isellonline_user}"\n\
 \n\
-# Wait for MySQL to be ready\n\
-echo "Waiting for MySQL at ${DB_HOST:-mysql}..."\n\
 for i in {1..30}; do\n\
-    # Try to connect using mysql client\n\
-    if mysqladmin ping -h"${DB_HOST:-mysql}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME:-isellonline_user}" -p"${DB_PASSWORD:-isellonline_password}" --silent; then\n\
-        echo "MySQL is up - executing migrations"\n\
-        break\n\
+    echo "Checking port ${DB_PORT:-3306} on ${DB_HOST:-mysql} (attempt $i/30)..."\n\
+    if nc -z "${DB_HOST:-mysql}" "${DB_PORT:-3306}"; then\n\
+        echo "Port is open! Checking credentials..."\n\
+        if mysqladmin ping -h"${DB_HOST:-mysql}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME:-isellonline_user}" -p"${DB_PASSWORD:-isellonline_password}" --silent; then\n\
+            echo "Access Granted! MySQL is ready."\n\
+            break\n\
+        else\n\
+            echo "Access Denied: Check your DB_USERNAME and DB_PASSWORD variables."\n\
+        fi\n\
+    else\n\
+        echo "Port is closed: MySQL container may still be starting or host name is wrong."\n\
     fi\n\
-    echo "MySQL is unavailable - attempt $i/30 - sleeping"\n\
-    sleep 2\n\
-    \n\
+\n\
     if [ $i -eq 30 ]; then\n\
-        echo "MySQL connection failed after 30 attempts"\n\
+        echo "Exceeded max attempts. Exiting."\n\
         exit 1\n\
     fi\n\
+    sleep 2\n\
 done\n\
 \n\
-# Run migrations\n\
 php artisan migrate --force\n\
-\n\
-# Clear and cache config\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
-php artisan view:cache\n\
 \n\
 echo "Starting Apache..."\n\
-# Start Apache\n\
 apache2-foreground' > /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh
