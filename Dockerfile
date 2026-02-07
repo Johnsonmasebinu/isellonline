@@ -80,8 +80,14 @@ update_env() {\n\
     fi\n\
 }\n\
 \n\
+# If the environment says host is 'mysql' but we renamed our service to 'db'\n\
+# we force it to 'db' to fix common VPS DNS loops.\n\
+if [ \"\$DB_HOST\" = \"mysql\" ] || [ -z \"\$DB_HOST\" ]; then\n\
+    export DB_HOST=\"db\"\n\
+fi\n\
+\n\
 echo \"Configuring .env file...\"\n\
-update_env \"DB_HOST\" \"\${DB_HOST:-db}\"\n\
+update_env \"DB_HOST\" \"\$DB_HOST\"\n\
 update_env \"DB_PORT\" \"\${DB_PORT:-3306}\"\n\
 update_env \"DB_DATABASE\" \"\${DB_DATABASE:-isellonline}\"\n\
 update_env \"DB_USERNAME\" \"\${DB_USERNAME:-isellonline_user}\"\n\
@@ -92,12 +98,12 @@ if ! grep -q \"^APP_KEY=base64\" .env; then\n\
     php artisan key:generate --force\n\
 fi\n\
 \n\
-echo \"Waiting for Database at \${DB_HOST:-db}...\"\n\
+echo \"Waiting for Database at \$DB_HOST...\"\n\
 \n\
 php -r \"\n\
-\\\$host = getenv('DB_HOST') ?: 'db';\n\
-\\\$user = getenv('DB_USERNAME') ?: 'isellonline_user';\n\
-\\\$pass = getenv('DB_PASSWORD') ?: 'isellonline_password';\n\
+\\\$host = getenv('DB_HOST');\n\
+\\\$user = getenv('DB_USERNAME');\n\
+\\\$pass = getenv('DB_PASSWORD');\n\
 \n\
 for (\\\$i = 0; \\\$i < 60; \\\$i++) {\n\
     try {\n\
