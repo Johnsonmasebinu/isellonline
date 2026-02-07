@@ -81,7 +81,6 @@ update_env() {\n\
 }\n\
 \n\
 # Set default database configuration for external MySQL service\n\
-# Uses Dockploy external database service\n\
 if [ -z \"\$DB_HOST\" ]; then\n\
     export DB_HOST=\"50.28.87.112\"\n\
 fi\n\
@@ -111,21 +110,37 @@ if ! grep -q \"^APP_KEY=base64\" .env; then\n\
 fi\n\
 \n\
 echo \"Waiting for Database at \$DB_HOST:\$DB_PORT...\"\n\
+echo \"Connection Debug:\"\n\
+echo \"  Host: \$DB_HOST\"\n\
+echo \"  Port: \$DB_PORT\"\n\
+echo \"  User: \$DB_USERNAME\"\n\
+\n\
+# Raw port test using nc\n\
+echo \"Testing raw TCP connection with nc...\"\n\
+if nc -zv -w 5 \$DB_HOST \$DB_PORT; then\n\
+    echo \"TCP connection to \$DB_HOST:\$DB_PORT succeeded!\"\n\
+else\n\
+    echo \"WARNING: TCP connection to \$DB_HOST:\$DB_PORT failed!\"\n\
+fi\n\
 \n\
 php -r \"\n\
 \\\$host = getenv('DB_HOST');\n\
 \\\$user = getenv('DB_USERNAME');\n\
 \\\$pass = getenv('DB_PASSWORD');\n\
-\\\$db_port = getenv('DB_PORT');\n\
+\\\$port = getenv('DB_PORT');\n\
 \n\
-for (\\\$i = 0; \\\$i < 60; \\\$i++) {\n\
+for (\\\$i = 0; \\\$i < 20; \\\$i++) {\n\
     try {\n\
-        \\\$pdo = new PDO(\\\"mysql:host=\\\$host;port=\\\$db_port\\\", \\\$user, \\\$pass);\n\
-        echo \\\"Connected successfully!\\\\n\\\";\n\
+        \\\$dsn = \\\"mysql:host=\\\$host;port=\\\$port;dbname=\\\" . getenv('DB_DATABASE');\n\
+        \\\$pdo = new PDO(\\\$dsn, \\\$user, \\\$pass, [\n\
+            PDO::ATTR_TIMEOUT => 5,\n\
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION\n\
+        ]);\n\
+        echo \\\"Connected successfully to \\\$host:\\\$port!\\\\n\\\";\n\
         exit(0);\n\
     } catch (PDOException \\\$e) {\n\
-        echo \\\"Attempt \\\" . (\\\$i+1) . \\\": \\\" . \\\$e->getMessage() . \\\"\\\\n\\\";\n\
-        sleep(2);\n\
+        echo \\\"Attempt \\\" . (\\\$i+1) . \\\": \\\" . \\\$e->getMessage() . \\\" (Port: \\\$port)\\\\n\\\";\n\
+        sleep(5);\n\
     }\n\
 }\n\
 exit(1);\n\
@@ -136,7 +151,7 @@ php artisan config:cache\n\
 php artisan route:cache\n\
 \n\
 echo \"Starting Management...\"\n\
-apache2-foreground" > /usr/local/bin/start.sh
+apache2-foreground\" > /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh
 
