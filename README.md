@@ -90,11 +90,11 @@ SUPPORT_PHONE=+1234567890
 SUPPORT_EMAIL=support@isellonline.website
 TAGLINE="AI- WhatsApp First E-commerce Creator"
 
-# Database
-MYSQL_HOST=isellonline-mysql
-MYSQL_DATABASE=isellonline
-MYSQL_USER=isellonline_user
-MYSQL_PASSWORD=your-secure-password
+# Database (use either DB_* or MYSQL_* naming)
+DB_HOST=your-database-service-name  # or MYSQL_HOST
+DB_DATABASE=isellonline             # or MYSQL_DATABASE
+DB_USERNAME=isellonline_user        # or MYSQL_USER
+DB_PASSWORD=your-secure-password    # or MYSQL_PASSWORD
 MYSQL_ROOT_PASSWORD=your-secure-root-password
 
 # Docker

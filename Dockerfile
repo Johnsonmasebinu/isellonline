@@ -80,18 +80,24 @@ update_env() {\n\
     fi\n\
 }\n\
 \n\
-# If the environment says host is 'mysql' but we renamed our service to 'db'\n\
-# we force it to 'db' to fix common VPS DNS loops.\n\
-if [ \"\$DB_HOST\" = \"mysql\" ] || [ -z \"\$DB_HOST\" ]; then\n\
-    export DB_HOST=\"db\"\n\
+# Set default database host if not provided\n\
+# Support both DB_HOST and MYSQL_HOST for compatibility\n\
+# For docker-compose deployments, default to 'db'\n\
+# For other deployments (like Dockploy), use the provided host\n\
+if [ -z \"\$DB_HOST\" ]; then\n\
+    if [ -n \"\$MYSQL_HOST\" ]; then\n\
+        export DB_HOST=\"\$MYSQL_HOST\"\n\
+    else\n\
+        export DB_HOST=\"db\"\n\
+    fi\n\
 fi\n\
 \n\
 echo \"Configuring .env file...\"\n\
 update_env \"DB_HOST\" \"\$DB_HOST\"\n\
 update_env \"DB_PORT\" \"\${DB_PORT:-3306}\"\n\
-update_env \"DB_DATABASE\" \"\${DB_DATABASE:-isellonline}\"\n\
-update_env \"DB_USERNAME\" \"\${DB_USERNAME:-isellonline_user}\"\n\
-update_env \"DB_PASSWORD\" \"\${DB_PASSWORD:-isellonline_password}\"\n\
+update_env \"DB_DATABASE\" \"\${DB_DATABASE:-\${MYSQL_DATABASE:-isellonline}}\"\n\
+update_env \"DB_USERNAME\" \"\${DB_USERNAME:-\${MYSQL_USER:-isellonline_user}}\"\n\
+update_env \"DB_PASSWORD\" \"\${DB_PASSWORD:-\${MYSQL_PASSWORD:-isellonline_password}}\"\n\
 update_env \"APP_URL\" \"\${APP_URL:-https://isellonline.website}\"\n\
 \n\
 if ! grep -q \"^APP_KEY=base64\" .env; then\n\
