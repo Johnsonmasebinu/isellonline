@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     default-mysql-client \
+    netcat-traditional \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
@@ -60,99 +61,8 @@ RUN echo '<VirtualHost *:80>\n\
 # Expose port 80
 EXPOSE 80
 
-# Create startup script
-RUN printf "#!/bin/bash\n\
-set -e\n\
-\n\
-sleep 2\n\
-\n\
-if [ ! -f .env ]; then\n\
-    cp .env.example .env\n\
-fi\n\
-\n\
-update_env() {\n\
-    local key=\$1\n\
-    local value=\$2\n\
-    if grep -q \"^\${key}=\" .env; then\n\
-        sed -i \"s|^\${key}=.*|\${key}=\${value}|\" .env\n\
-    else\n\
-        echo \"\${key}=\${value}\" >> .env\n\
-    fi\n\
-}\n\
-\n\
-# Set default database configuration for external MySQL service\n\
-if [ -z \"\$DB_HOST\" ]; then\n\
-    export DB_HOST=\"50.28.87.112\"\n\
-fi\n\
-if [ -z \"\$DB_PORT\" ]; then\n\
-    export DB_PORT=\"27018\"\n\
-fi\n\
-if [ -z \"\$DB_DATABASE\" ]; then\n\
-    export DB_DATABASE=\"ISellOnlineDB\"\n\
-fi\n\
-if [ -z \"\$DB_USERNAME\" ]; then\n\
-    export DB_USERNAME=\"ISellOnlineDB\"\n\
-fi\n\
-if [ -z \"\$DB_PASSWORD\" ]; then\n\
-    export DB_PASSWORD=\"ISellOnlineDB\"\n\
-fi\n\
-\n\
-echo \"Configuring .env file...\"\n\
-update_env \"DB_HOST\" \"\$DB_HOST\"\n\
-update_env \"DB_PORT\" \"\$DB_PORT\"\n\
-update_env \"DB_DATABASE\" \"\$DB_DATABASE\"\n\
-update_env \"DB_USERNAME\" \"\$DB_USERNAME\"\n\
-update_env \"DB_PASSWORD\" \"\$DB_PASSWORD\"\n\
-update_env \"APP_URL\" \"\${APP_URL:-https://isellonline.website}\"\n\
-\n\
-if ! grep -q \"^APP_KEY=base64\" .env; then\n\
-    php artisan key:generate --force\n\
-fi\n\
-\n\
-echo \"Waiting for Database at \$DB_HOST:\$DB_PORT...\"\n\
-echo \"Connection Debug:\"\n\
-echo \"  Host: \$DB_HOST\"\n\
-echo \"  Port: \$DB_PORT\"\n\
-echo \"  User: \$DB_USERNAME\"\n\
-\n\
-# Raw port test using nc\n\
-echo \"Testing raw TCP connection with nc...\"\n\
-if nc -zv -w 5 \$DB_HOST \$DB_PORT; then\n\
-    echo \"TCP connection to \$DB_HOST:\$DB_PORT succeeded!\"\n\
-else\n\
-    echo \"WARNING: TCP connection to \$DB_HOST:\$DB_PORT failed!\"\n\
-fi\n\
-\n\
-php -r \"\n\
-\\\$host = getenv('DB_HOST');\n\
-\\\$user = getenv('DB_USERNAME');\n\
-\\\$pass = getenv('DB_PASSWORD');\n\
-\\\$port = getenv('DB_PORT');\n\
-\n\
-for (\\\$i = 0; \\\$i < 20; \\\$i++) {\n\
-    try {\n\
-        \\\$dsn = \\\"mysql:host=\\\$host;port=\\\$port;dbname=\\\" . getenv('DB_DATABASE');\n\
-        \\\$pdo = new PDO(\\\$dsn, \\\$user, \\\$pass, [\n\
-            PDO::ATTR_TIMEOUT => 5,\n\
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION\n\
-        ]);\n\
-        echo \\\"Connected successfully to \\\$host:\\\$port!\\\\n\\\";\n\
-        exit(0);\n\
-    } catch (PDOException \\\$e) {\n\
-        echo \\\"Attempt \\\" . (\\\$i+1) . \\\": \\\" . \\\$e->getMessage() . \\\" (Port: \\\$port)\\\\n\\\";\n\
-        sleep(5);\n\
-    }\n\
-}\n\
-exit(1);\n\
-\"\n\
-\n\
-php artisan migrate --force\n\
-php artisan config:cache\n\
-php artisan route:cache\n\
-\n\
-echo \"Starting Management...\"\n\
-apache2-foreground\" > /usr/local/bin/start.sh
-
+# Copy startup script
+COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # Start the application
