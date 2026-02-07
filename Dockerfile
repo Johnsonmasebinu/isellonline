@@ -86,16 +86,16 @@ if [ -z \"\$DB_HOST\" ]; then\n\
     export DB_HOST=\"50.28.87.112\"\n\
 fi\n\
 if [ -z \"\$DB_PORT\" ]; then\n\
-    export DB_PORT=\"8443\"\n\
+    export DB_PORT=\"27018\"\n\
 fi\n\
 if [ -z \"\$DB_DATABASE\" ]; then\n\
-    export DB_DATABASE=\"isellonline_db\"\n\
+    export DB_DATABASE=\"ISellOnlineDB\"\n\
 fi\n\
 if [ -z \"\$DB_USERNAME\" ]; then\n\
-    export DB_USERNAME=\"isellonline_db\"\n\
+    export DB_USERNAME=\"ISellOnlineDB\"\n\
 fi\n\
 if [ -z \"\$DB_PASSWORD\" ]; then\n\
-    export DB_PASSWORD=\"isellonline_db\"\n\
+    export DB_PASSWORD=\"ISellOnlineDB\"\n\
 fi\n\
 \n\
 echo \"Configuring .env file...\"\n\
@@ -116,10 +116,11 @@ php -r \"\n\
 \\\$host = getenv('DB_HOST');\n\
 \\\$user = getenv('DB_USERNAME');\n\
 \\\$pass = getenv('DB_PASSWORD');\n\
+\\\$db_port = getenv('DB_PORT');\n\
 \n\
 for (\\\$i = 0; \\\$i < 60; \\\$i++) {\n\
     try {\n\
-        \\\$pdo = new PDO(\\\"mysql:host=\\\$host;port=3306\\\", \\\$user, \\\$pass);\n\
+        \\\$pdo = new PDO(\\\"mysql:host=\\\$host;port=\\\$db_port\\\", \\\$user, \\\$pass);\n\
         echo \\\"Connected successfully!\\\\n\\\";\n\
         exit(0);\n\
     } catch (PDOException \\\$e) {\n\

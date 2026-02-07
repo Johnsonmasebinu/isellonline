@@ -12,11 +12,11 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
-      - DB_HOST=127.0.0.1
-      - DB_PORT=3306
-      - DB_DATABASE=isellonline
-      - DB_USERNAME=isellonline_user
-      - DB_PASSWORD=isellonline_password
+      - DB_HOST=50.28.87.112
+      - DB_PORT=27018
+      - DB_DATABASE=ISellOnlineDB
+      - DB_USERNAME=ISellOnlineDB
+      - DB_PASSWORD=ISellOnlineDB
       - APP_URL=https://isellonline.website
     volumes:
       - ./storage:/var/www/html/storage

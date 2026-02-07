@@ -92,10 +92,10 @@ TAGLINE="AI- WhatsApp First E-commerce Creator"
 
 # Database (External MySQL service)
 DB_HOST=50.28.87.112
-DB_PORT=8443
-DB_DATABASE=isellonline_db
-DB_USERNAME=isellonline_db
-DB_PASSWORD=isellonline_db
+DB_PORT=27018
+DB_DATABASE=ISellOnlineDB
+DB_USERNAME=ISellOnlineDB
+DB_PASSWORD=ISellOnlineDB
 ```
 
 ### Deploy with Dockploy
