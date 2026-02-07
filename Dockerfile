@@ -4,7 +4,7 @@ FROM php:8.2-apache
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies including MySQL server
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -17,13 +17,7 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     default-mysql-client \
-    mysql-server \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Configure MySQL to run in the same container
-RUN mkdir -p /var/run/mysqld && \
-    chown mysql:mysql /var/run/mysqld && \
-    chmod 755 /var/run/mysqld
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -70,18 +64,6 @@ EXPOSE 80
 RUN printf "#!/bin/bash\n\
 set -e\n\
 \n\
-# Start MySQL service\n\
-service mysql start\n\
-sleep 3\n\
-\n\
-# Configure MySQL if not already configured\n\
-if [ ! -d /var/lib/mysql/mysql ]; then\n\
-    mysql -u root -e \"CREATE DATABASE IF NOT EXISTS isellonline;\"\n\
-    mysql -u root -e \"CREATE USER IF NOT EXISTS 'isellonline_user'@'localhost' IDENTIFIED BY 'isellonline_password';\"\n\
-    mysql -u root -e \"GRANT ALL PRIVILEGES ON isellonline.* TO 'isellonline_user'@'localhost';\"\n\
-    mysql -u root -e \"FLUSH PRIVILEGES;\"\n\
-fi\n\
-\n\
 sleep 2\n\
 \n\
 if [ ! -f .env ]; then\n\
@@ -98,23 +80,30 @@ update_env() {\n\
     fi\n\
 }\n\
 \n\
-# Set default database host if not provided\n\
-# For single-container deployments, use localhost\n\
-# For multi-container deployments, use the provided host\n\
+# Set default database configuration for external MySQL service\n\
+# Uses Dockploy external database service\n\
 if [ -z \"\$DB_HOST\" ]; then\n\
-    if [ -n \"\$MYSQL_HOST\" ]; then\n\
-        export DB_HOST=\"\$MYSQL_HOST\"\n\
-    else\n\
-        export DB_HOST=\"127.0.0.1\"\n\
-    fi\n\
+    export DB_HOST=\"50.28.87.112\"\n\
+fi\n\
+if [ -z \"\$DB_PORT\" ]; then\n\
+    export DB_PORT=\"8443\"\n\
+fi\n\
+if [ -z \"\$DB_DATABASE\" ]; then\n\
+    export DB_DATABASE=\"isellonline_db\"\n\
+fi\n\
+if [ -z \"\$DB_USERNAME\" ]; then\n\
+    export DB_USERNAME=\"isellonline_db\"\n\
+fi\n\
+if [ -z \"\$DB_PASSWORD\" ]; then\n\
+    export DB_PASSWORD=\"isellonline_db\"\n\
 fi\n\
 \n\
 echo \"Configuring .env file...\"\n\
 update_env \"DB_HOST\" \"\$DB_HOST\"\n\
-update_env \"DB_PORT\" \"\${DB_PORT:-3306}\"\n\
-update_env \"DB_DATABASE\" \"\${DB_DATABASE:-\${MYSQL_DATABASE:-isellonline}}\"\n\
-update_env \"DB_USERNAME\" \"\${DB_USERNAME:-\${MYSQL_USER:-isellonline_user}}\"\n\
-update_env \"DB_PASSWORD\" \"\${DB_PASSWORD:-\${MYSQL_PASSWORD:-isellonline_password}}\"\n\
+update_env \"DB_PORT\" \"\$DB_PORT\"\n\
+update_env \"DB_DATABASE\" \"\$DB_DATABASE\"\n\
+update_env \"DB_USERNAME\" \"\$DB_USERNAME\"\n\
+update_env \"DB_PASSWORD\" \"\$DB_PASSWORD\"\n\
 update_env \"APP_URL\" \"\${APP_URL:-https://isellonline.website}\"\n\
 \n\
 if ! grep -q \"^APP_KEY=base64\" .env; then\n\

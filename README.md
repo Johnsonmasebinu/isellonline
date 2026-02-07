@@ -24,10 +24,10 @@ ISellOnline is an AI-powered WhatsApp-first e-commerce platform that allows user
 
 - **Backend**: Laravel 11 (PHP 8.2)
 - **Frontend**: Vue.js 3 with Vite
-- **Database**: MySQL 8.0 (runs in same container)
+- **Database**: MySQL 8.0 (external service)
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide Vue
-- **Deployment**: Docker (single container)
+- **Deployment**: Docker + Dockploy
 
 ## 📋 Prerequisites
 
@@ -76,22 +76,11 @@ ISellOnline is an AI-powered WhatsApp-first e-commerce platform that allows user
    - Frontend: http://localhost
    - API: http://localhost/api
 
-## 🐳 Production Deployment
-
-### Single Container Deployment (Recommended)
-
-The application now runs MySQL in the same container for simplified deployment:
-
-```bash
-# Build and run with docker-compose
-docker-compose -f docker-compose.prod.yml up -d
-
-# Or deploy directly with Docker
-docker build -t isellonline .
-docker run -d -p 80:80 -v mysql_data:/var/lib/mysql isellonline
-```
+## 🐳 Production Deployment (Dockploy)
 
 ### Environment Variables
+
+The application is configured to use an external MySQL database service:
 
 ```env
 # Application
@@ -101,20 +90,20 @@ SUPPORT_PHONE=+1234567890
 SUPPORT_EMAIL=support@isellonline.website
 TAGLINE="AI- WhatsApp First E-commerce Creator"
 
-# Database (MySQL runs in same container)
-DB_HOST=127.0.0.1
-DB_DATABASE=isellonline
-DB_USERNAME=isellonline_user
-DB_PASSWORD=isellonline_password
+# Database (External MySQL service)
+DB_HOST=50.28.87.112
+DB_PORT=8443
+DB_DATABASE=isellonline_db
+DB_USERNAME=isellonline_db
+DB_PASSWORD=isellonline_db
 ```
 
-### Multi-Container Deployment (Dockploy)
+### Deploy with Dockploy
 
-If you prefer separate containers, set the database service name:
-
-```env
-DB_HOST=your-database-service-name
-```
+1. Connect your GitHub repository to Dockploy
+2. The Dockerfile will automatically use the external database configuration
+3. Set `APP_KEY` environment variable in Dockploy dashboard
+4. Deploy!
 
 ### 3. Post-Deployment
 
