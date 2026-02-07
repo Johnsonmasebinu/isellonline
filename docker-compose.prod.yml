@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: isellonline_app_prod
     build:
       context: .
       dockerfile: Dockerfile
@@ -19,6 +20,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    links:
+      - mysql
     volumes:
       - ./storage:/var/www/html/storage
     networks:
@@ -26,6 +29,7 @@ services:
     restart: unless-stopped
 
   mysql:
+    container_name: isellonline_mysql_prod
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}

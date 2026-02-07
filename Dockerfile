@@ -64,6 +64,9 @@ EXPOSE 80
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
+# Give Docker DNS a moment to settle\n\
+sleep 2\n\
+\n\
 # Ensure .env exists\n\
 if [ ! -f .env ]; then\n\
     echo "Creating .env from .env.example..."\n\
@@ -97,8 +100,9 @@ if ! grep -q "^APP_KEY=base64" .env; then\n\
     php artisan key:generate --force\n\
 fi\n\
 \n\
-echo "Waiting for MySQL connection..."\n\
-# Use PHP to check DB connection\n\
+echo "Waiting for MySQL connection at host: ${DB_HOST:-mysql} ..."\n\
+\n\
+# Use PHP to check DB connection with extra debugging\n\
 php -r "\n\
 \$host = \"${DB_HOST:-mysql}\";\n\
 \$user = \"${DB_USERNAME:-isellonline_user}\";\n\
@@ -106,9 +110,19 @@ php -r "\n\
 \$db   = \"${DB_DATABASE:-isellonline}\";\n\
 \n\
 for (\$i = 0; \$i < 30; \$i++) {\n\
+    // Check if host resolves\n\
+    \$ip = gethostbyname(\$host);\n\
+    if (\$ip === \$host) {\n\
+       echo \"DNS Error: Could not resolve hostname \$host to an IP.\\n\";\n\
+       echo \"Checking /etc/hosts contents:\\n\";\n\
+       echo file_get_contents(\"/etc/hosts\");\n\
+    } else {\n\
+       echo \"DNS Success: Host \$host resolved to \$ip\\n\";\n\
+    }\n\
+\n\
     try {\n\
         \$pdo = new PDO(\"mysql:host=\$host;port=3306\", \$user, \$pass);\n\
-        echo \"Connected successfully to MySQL\\n\";\n\
+        echo \"Connected successfully to MySQL!\\n\";\n\
         exit(0);\n\
     } catch (PDOException \$e) {\n\
         echo \"Attempt \" . (\$i+1) . \": MySQL not ready... \" . \$e->getMessage() . \"\\n\";\n\
