@@ -12,20 +12,21 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
-      - DB_HOST=isellonline_mysql
+      - DB_HOST=db
       - DB_PORT=3306
       - DB_DATABASE=isellonline
       - DB_USERNAME=isellonline_user
       - DB_PASSWORD=isellonline_password
       - APP_URL=https://isellonline.website
     depends_on:
-      - mysql
+      - db
+    links:
+      - db
     volumes:
       - ./storage:/var/www/html/storage
 
-  mysql:
-    container_name: isellonline_mysql
-    hostname: mysql
+  db:
+    container_name: isellonline_db
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=rootpassword

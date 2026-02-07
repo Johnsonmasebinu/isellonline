@@ -81,7 +81,7 @@ update_env() {\n\
 }\n\
 \n\
 echo \"Configuring .env file...\"\n\
-update_env \"DB_HOST\" \"\${DB_HOST:-mysql}\"\n\
+update_env \"DB_HOST\" \"\${DB_HOST:-db}\"\n\
 update_env \"DB_PORT\" \"\${DB_PORT:-3306}\"\n\
 update_env \"DB_DATABASE\" \"\${DB_DATABASE:-isellonline}\"\n\
 update_env \"DB_USERNAME\" \"\${DB_USERNAME:-isellonline_user}\"\n\
@@ -92,10 +92,10 @@ if ! grep -q \"^APP_KEY=base64\" .env; then\n\
     php artisan key:generate --force\n\
 fi\n\
 \n\
-echo \"Waiting for MySQL at \${DB_HOST:-mysql}...\"\n\
+echo \"Waiting for Database at \${DB_HOST:-db}...\"\n\
 \n\
 php -r \"\n\
-\\\$host = getenv('DB_HOST') ?: 'mysql';\n\
+\\\$host = getenv('DB_HOST') ?: 'db';\n\
 \\\$user = getenv('DB_USERNAME') ?: 'isellonline_user';\n\
 \\\$pass = getenv('DB_PASSWORD') ?: 'isellonline_password';\n\
 \n\
