@@ -74,6 +74,9 @@ for p in 3306 8443 80 443; do
     nc -znv -w 1 $DB_HOST $p 2>&1 | grep -q "succeeded" && echo "     NOTE: Port $p is OPEN"
 done
 
+echo "  7. Traceroute to $DB_HOST (Last 5 hops):"
+traceroute -q 1 -w 1 -m 20 $DB_HOST | tail -n 5
+
 echo "  Routing Table:"
 route -n || netstat -rn
 echo "  IP Addr:"

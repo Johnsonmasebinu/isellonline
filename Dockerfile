@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     net-tools \
     iputils-ping \
+    traceroute \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
