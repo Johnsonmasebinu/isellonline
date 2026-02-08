@@ -17,11 +17,6 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     default-mysql-client \
-    netcat-traditional \
-    iproute2 \
-    net-tools \
-    iputils-ping \
-    traceroute \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
