@@ -12,8 +12,8 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - DB_CONNECTION=mysql
-      - DB_HOST=50.28.87.112
-      - DB_PORT=27018
+      - DB_HOST=myapps-isellonlinedb-diqya2
+      - DB_PORT=3306
       - DB_DATABASE=ISellOnlineDB
       - DB_USERNAME=ISellOnlineDB
       - DB_PASSWORD=ISellOnlineDB

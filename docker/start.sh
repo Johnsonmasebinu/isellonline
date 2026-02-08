@@ -91,16 +91,26 @@ ip addr | grep "inet "
 
 # Multi-attempt PHP connection check
 echo "Starting database connection attempts..."
-# We will try the user-provided IP first, then fallback to 'mysql' if it exists
+# We will try the user-provided IP first, then fallback to internal hosts on port 3306
 php -r "
-\$hosts = [getenv('DB_HOST'), 'mysql', 'isellonline-mysql', 'db'];
 \$user  = getenv('DB_USERNAME');
 \$pass  = getenv('DB_PASSWORD');
-\$port  = getenv('DB_PORT');
 \$db    = getenv('DB_DATABASE');
 
-foreach (\$hosts as \$host) {
-    if (!\$host) continue;
+// List of (host, port) pairs to try
+\$targets = [
+    ['myapps-isellonlinedb-diqya2', '3306'],
+    [getenv('DB_HOST'), getenv('DB_PORT')],
+    ['mysql', '3306'],
+    ['isellonline-mysql', '3306'],
+    ['db', '3306'],
+    ['172.17.0.1', '3306']
+];
+
+foreach (\$targets as \$target) {
+    list(\$host, \$port) = \$target;
+    if (!\$host || !\$port) continue;
+    
     echo \"Testing connection to \$host:\$port...\\n\";
     try {
         \$dsn = \"mysql:host=\$host;port=\$port;dbname=\$db\";
@@ -108,15 +118,21 @@ foreach (\$hosts as \$host) {
             PDO::ATTR_TIMEOUT => 3,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         ]);
-        echo \"Connected successfully to \$host:\\n\";
-        // If we found a working host that isn't the one in .env, we update it
-        if (\$host != getenv('DB_HOST')) {
-            file_put_contents('.env', preg_replace('/^DB_HOST=.*$/m', 'DB_HOST=' . \$host, file_get_contents('.env')));
-            echo \"Updated .env DB_HOST to \$host\\n\";
+        echo \"Connected successfully to \$host!\";
+        
+        // Update .env if we found a working connection
+        if (\$host != getenv('DB_HOST') || \$port != getenv('DB_PORT')) {
+            \$env = file_get_contents('.env');
+            \$env = preg_replace('/^DB_HOST=.*$/m', 'DB_HOST=' . \$host, \$env);
+            \$env = preg_replace('/^DB_PORT=.*$/m', 'DB_PORT=' . \$port, \$env);
+            file_put_contents('.env', \$env);
+            echo \" (Updated .env to \$host:\$port)\\n\";
+        } else {
+            echo \"\\n\";
         }
         exit(0);
     } catch (PDOException \$e) {
-        echo \"Failed to connect to \$host: \" . \$e->getMessage() . \"\\n\";
+        echo \"Failed: \" . \$e->getMessage() . \"\\n\";
     }
 }
 echo \"WARNING: All database connection attempts failed. Continuing anyway...\\n\";
