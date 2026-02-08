@@ -1,124 +1,142 @@
 <template>
-  <div id="app">
+  <div id="app" class="selection:bg-emerald-100 selection:text-emerald-900">
     <!-- Navigation -->
-    <nav class="navbar">
-      <div class="container">
-        <div class="nav-brand">
-          <h2 class="brand-name">ISellOnline</h2>
-          <p class="tagline">{{ tagline }}</p>
+    <nav class="navbar fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100 py-3 transition-all duration-300" :class="{ 'py-2 shadow-lg': scrolled }">
+      <div class="container mx-auto px-4 lg:px-6 flex justify-between items-center">
+        <div class="nav-brand group cursor-pointer">
+          <div class="flex items-center gap-3">
+            <img :src="'/assets/logo_main.png'" alt="ISellOnline Logo" class="h-8 lg:h-9 group-hover:scale-105 transition-transform" />
+            <div class="flex flex-col">
+              <span class="text-xl lg:text-2xl font-black text-emerald-900 leading-none tracking-tight">ISellOnline</span>
+              <span class="text-[9px] text-emerald-600 font-bold uppercase tracking-widest mt-0.5">{{ tagline }}</span>
+            </div>
+          </div>
         </div>
-        <div class="nav-links" :class="{ 'mobile-open': mobileMenuOpen }">
-          <a href="#features" @click="mobileMenuOpen = false">Features</a>
-          <a href="#pricing" @click="mobileMenuOpen = false">Pricing</a>
-          <a href="#how-it-works" @click="mobileMenuOpen = false">How It Works</a>
-          <a href="#contact" @click="mobileMenuOpen = false">Contact</a>
-          <button class="cta-btn" @click="mobileMenuOpen = false">Start Now</button>
+        
+        <div class="nav-links hidden md:flex items-center gap-6 lg:gap-8">
+          <a href="#features" class="text-sm lg:text-base text-gray-600 hover:text-emerald-600 font-bold transition-colors">Features</a>
+          <a href="#how-it-works" class="text-sm lg:text-base text-gray-600 hover:text-emerald-600 font-bold transition-colors">How It Works</a>
+          <a href="#pricing" class="text-sm lg:text-base text-gray-600 hover:text-emerald-600 font-bold transition-colors">Pricing</a>
+          <a href="#contact" class="text-sm lg:text-base text-gray-600 hover:text-emerald-600 font-bold transition-colors">Contact</a>
+          <button class="bg-emerald-600 text-white px-5 py-2 lg:px-6 lg:py-2.5 rounded-full font-bold text-sm lg:text-base hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-200 transition-all active:scale-95">
+            Get Started
+          </button>
         </div>
-        <button class="mobile-menu-toggle" @click="toggleMobileMenu" :class="{ active: mobileMenuOpen }">
-          <span></span>
-          <span></span>
-          <span></span>
+
+        <button class="md:hidden p-2 text-gray-600" @click="mobileMenuOpen = !mobileMenuOpen">
+          <Bars3Icon v-if="!mobileMenuOpen" class="w-6 h-6" />
+          <XMarkIcon v-else class="w-6 h-6" />
         </button>
       </div>
+
+      <!-- Mobile Menu -->
+      <transition 
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="translate-y-[-10px] opacity-0"
+        enter-to-class="translate-y-0 opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="translate-y-0 opacity-100"
+        leave-to-class="translate-y-[-10px] opacity-0"
+      >
+        <div v-if="mobileMenuOpen" class="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-2xl p-6 flex flex-col gap-4">
+          <a href="#features" class="text-base font-bold text-gray-800" @click="mobileMenuOpen = false">Features</a>
+          <a href="#how-it-works" class="text-base font-bold text-gray-800" @click="mobileMenuOpen = false">How It Works</a>
+          <a href="#pricing" class="text-base font-bold text-gray-800" @click="mobileMenuOpen = false">Pricing</a>
+          <a href="#contact" class="text-base font-bold text-gray-800" @click="mobileMenuOpen = false">Contact</a>
+          <button class="w-full bg-emerald-600 text-white py-3 rounded-2xl font-bold text-lg shadow-lg">Start Free Trial</button>
+        </div>
+      </transition>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
-      <div class="container">
-        <div class="hero-content" :class="{ 'fade-in': loaded }">
-          <h1 class="hero-title">
-            Build Your Online Store
-            <span class="gradient-text">Via WhatsApp</span>
-          </h1>
-          <p class="hero-subtitle">
-            Turn simple WhatsApp messages into a complete online store.
-            No technical skills needed. Just send messages and start selling.
-          </p>
-          <div class="hero-cta">
-            <button class="btn-primary">Get Started</button>
-            <button class="btn-secondary">See How It Works</button>
+    <section class="hero pt-24 lg:pt-32 pb-16 lg:pb-20 overflow-hidden">
+      <div class="container mx-auto px-4 lg:px-6 md:px-12">
+        <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+          <div class="lg:w-1/2 space-y-6 lg:space-y-8 text-center lg:text-left animate-fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 bg-emerald-50 text-emerald-700 rounded-full text-xs lg:text-sm font-bold border border-emerald-100 animate-bounce-subtle">
+              <BoltIcon class="w-3.5 h-3.5 lg:w-4 h-4" />
+              <span>AI-Powered E-commerce</span>
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight">
+              Launch Your Store in 5 Mins. <span class="text-emerald-400 drop-shadow-sm">No Dev Needed.</span>
+            </h1>
+            
+            <p class="text-base lg:text-lg text-emerald-50/80 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
+              No need to hire a developer, ISellOnline Got you! 
+              Turn WhatsApp chats into a complete store. Manage products and payments with simple text messages.
+            </p>
+            
+            <div class="flex flex-row items-center gap-3 justify-center lg:justify-start pt-2">
+              <button class="px-6 py-3 bg-white text-emerald-700 rounded-xl font-bold text-sm lg:text-base hover:scale-105 transition-all shadow-lg hover:shadow-white/10 active:scale-95 group">
+                Create My Store
+                <ArrowRightIcon class="w-4 h-4 inline-block ml-1.5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button class="px-6 py-3 bg-emerald-700/30 text-white border border-emerald-400/30 backdrop-blur-md rounded-xl font-bold text-sm lg:text-base hover:bg-emerald-700/50 transition-all active:scale-95">
+                Watch Demo
+              </button>
+            </div>
+
+            <div class="flex items-center justify-center lg:justify-start gap-4 lg:gap-6 pt-6 italic text-emerald-100/60 font-medium text-xs lg:text-sm">
+              <div class="flex -space-x-3">
+                <img v-for="i in 4" :key="i" :src="`https://i.pravatar.cc/100?img=${i+10}`" class="w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-emerald-800 shadow-xl" />
+              </div>
+              <div class="text-left">
+                <p class="text-white font-bold leading-none">2,500+ Sellers</p>
+                <div class="flex items-center gap-1 mt-1">
+                  <StarIcon v-for="i in 5" :key="i" class="w-3 h-3 lg:w-4 h-4 text-emerald-400 fill-current" />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="hero-visual" :class="{ 'slide-in': loaded }">
-          <div class="phone-mockup">
-            <div class="whatsapp-chat">
-              <div class="chat-message sent">
-                <p>Hi! I want to create an online store</p>
-              </div>
-              <div class="chat-message received">
-                <p>Great! Let's get started. What's your store name?</p>
-              </div>
-              <div class="chat-message sent">
-                <p>TechGadgets Pro</p>
-              </div>
-              <div class="chat-message received">
-                <p>✅ Perfect! Your store is ready at:<br><strong>techgadgets.isellonline.com</strong></p>
-              </div>
-              <div class="chat-message sent">
-                <p>Add product: iPhone 15 Pro, ₦850,000, 10 in stock</p>
-              </div>
-              <div class="chat-message received">
-                <p>📱 Product added successfully! iPhone 15 Pro - ₦850,000 (10 units)</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Add Samsung Galaxy S24, ₦750,000</p>
-              </div>
-              <div class="chat-message received">
-                <p>📱 Added Samsung Galaxy S24 - ₦750,000</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Show my wallet balance</p>
-              </div>
-              <div class="chat-message received">
-                <p>💰 Your wallet balance: ₦25,000<br>Available for domain purchase and other services</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Can I purchase this domain?</p>
-              </div>
-              <div class="chat-message received">
-                <p>🌐 Domain purchase: ₦15,000/year<br>Your balance: ₦25,000<br>Proceed with payment?</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Yes, pay from wallet</p>
-              </div>
-              <div class="chat-message received">
-                <p>💳 Payment processed! ₦15,000 deducted.<br>New balance: ₦10,000<br>Domain is now yours! 🎉</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Update iPhone price to ₦800,000</p>
-              </div>
-              <div class="chat-message received">
-                <p>📈 Price updated! iPhone 15 Pro now ₦800,000</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Check today's sales</p>
-              </div>
-              <div class="chat-message received">
-                <p>📊 Today's sales: ₦0<br>3 visitors to your store<br>Keep up the great work!</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Add AirPods Pro, ₦120,000, 20 stock</p>
-              </div>
-              <div class="chat-message received">
-                <p>🎧 Product added! AirPods Pro - ₦120,000 (20 units)</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Send promotional message to customers</p>
-              </div>
-              <div class="chat-message received">
-                <p>📢 What message would you like to send?</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Flash sale! 20% off all products today only!</p>
-              </div>
-              <div class="chat-message received">
-                <p>✅ Promotional message sent to 5 customers!</p>
-              </div>
-              <div class="chat-message sent">
-                <p>Can I purchase techgadgets.xyz?</p>
-              </div>
-              <div class="chat-message received">
-                <p>🌐 Custom domain available!<br>techgadgets.xyz - ₦25,000/year<br>Your wallet: ₦10,000<br>💳 Pay ₦25,000 to purchase?</p>
+
+          <div class="lg:w-1/2 relative group w-full max-w-[400px] lg:max-w-none">
+            <!-- Decorative elements -->
+            <div class="absolute -top-10 -right-10 w-48 h-48 lg:w-64 lg:h-64 bg-emerald-400/20 blur-3xl rounded-full animate-pulse"></div>
+            
+            <div class="relative z-10 p-2 lg:p-6 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[30px] lg:rounded-[40px] shadow-3xl animate-float">
+              <div class="phone-mockup relative bg-gray-900 rounded-[24px] lg:rounded-[32px] border-[6px] lg:border-[8px] border-gray-800 shadow-inner overflow-hidden aspect-[9/16] max-w-[320px] lg:max-w-[360px] mx-auto">
+                <!-- Status Bar -->
+                <div class="h-6 lg:h-8 bg-emerald-800 flex items-center justify-between px-4 lg:px-6 pt-1 lg:pt-2">
+                   <span class="text-[8px] lg:text-[10px] text-white font-bold tracking-tight">9:41</span>
+                   <div class="flex gap-1 lg:gap-1.5">
+                     <span class="text-[8px] lg:text-[10px] text-white font-bold">5G</span>
+                   </div>
+                </div>
+                
+                <!-- Chat Header -->
+                <div class="h-14 lg:h-16 bg-emerald-800 border-b border-emerald-700 flex items-center px-4 gap-3 shadow-md">
+                   <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-emerald-600 flex items-center justify-center">
+                     <ChatBubbleLeftRightIcon class="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                   </div>
+                   <div>
+                     <h4 class="text-xs lg:text-sm font-bold text-white">ISellOnline AI</h4>
+                     <p class="text-[8px] lg:text-[10px] text-emerald-300 font-medium tracking-tight">Online Assistant</p>
+                   </div>
+                </div>
+
+                <!-- Chat Body -->
+                <div ref="chatContainer" class="h-[400px] lg:h-[450px] overflow-y-auto p-4 space-y-3 lg:space-y-4 bg-[#0b141a] scroll-smooth custom-scrollbar">
+                  <div v-for="(msg, i) in activeMessages" :key="i" 
+                    class="flex flex-col max-w-[85%] animate-fade-up-short"
+                    :class="msg.role === 'user' ? 'ml-auto items-end' : 'mr-auto items-start'">
+                    <div class="p-2.5 lg:p-3 rounded-xl lg:rounded-2xl text-[12px] lg:text-sm" 
+                      :class="msg.role === 'user' ? 'bg-[#005c4b] text-white rounded-tr-none shadow-sm' : 'bg-[#202c33] text-white rounded-tl-none shadow-sm'">
+                      <p class="whitespace-pre-line" v-html="msg.text"></p>
+                    </div>
+                    <span class="text-[8px] lg:text-[9px] text-gray-500 font-medium mt-1 px-1">{{ msg.time }}</span>
+                  </div>
+                </div>
+
+                <!-- Chat Input Mockup -->
+                <div class="absolute bottom-0 left-0 w-full p-3 lg:p-4 bg-[#0b141a]">
+                   <div class="flex items-center gap-2 bg-[#202c33] rounded-full px-3 py-1.5 lg:px-4 lg:py-2 text-gray-400">
+                     <FaceSmileIcon class="w-4 h-4 lg:w-5 lg:h-5 flex-shrink-0" />
+                     <span class="flex-grow text-[10px] lg:text-xs italic">Type as message...</span>
+                     <PaperClipIcon class="w-4 h-4 lg:w-5 lg:h-5 flex-shrink-0" />
+                     <CameraIcon class="w-4 h-4 lg:w-5 lg:h-5 flex-shrink-0" />
+                   </div>
+                </div>
               </div>
             </div>
           </div>
@@ -126,113 +144,93 @@
       </div>
     </section>
 
+    <!-- Logo Cloud -->
+    <div class="bg-emerald-950 py-10 relative overflow-hidden">
+      <div class="container mx-auto px-6 relative z-10 flex flex-wrap justify-center gap-8 lg:gap-16 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+        <div v-for="i in 5" :key="i" class="text-white text-xl lg:text-2xl font-black italic tracking-tighter">BRAND_{{ i }}</div>
+      </div>
+    </div>
+
     <!-- How It Works Section -->
-    <section id="how-it-works" class="how-it-works">
-      <div class="container">
-        <h2 class="section-title">How It Works</h2>
-        <p class="section-subtitle">Three easy steps that make your online store work</p>
+    <section id="how-it-works" class="py-24 lg:py-32 bg-white relative overflow-hidden">
+      <div class="container mx-auto px-4 lg:px-6 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+          <h2 class="text-3xl lg:text-5xl font-black text-gray-900 mb-4 lg:mb-6">Built for <span class="text-emerald-600">Speed.</span></h2>
+          <p class="text-lg lg:text-xl text-gray-500 font-medium">Three phases of your business growth managed seamlessly via WhatsApp.</p>
+        </div>
         
-        <div class="flow-tabs">
+        <div class="flex flex-wrap justify-center gap-3 lg:gap-4 mb-12 lg:mb-16">
           <button 
             v-for="(flow, index) in flows" 
             :key="index"
-            :class="['tab-btn', { active: activeFlow === index }]"
+            :class="['px-6 py-3 lg:px-8 lg:py-4 rounded-xl lg:rounded-2xl text-base lg:text-lg font-bold transition-all duration-300 transform', 
+                    activeFlow === index 
+                    ? 'bg-emerald-600 text-white shadow-2xl shadow-emerald-200 scale-105' 
+                    : 'bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600']"
             @click="activeFlow = index"
           >
             {{ flow.name }}
           </button>
         </div>
 
-        <div class="flow-content">
-          <transition name="fade" mode="out-in">
-            <div :key="activeFlow" class="flow-steps">
-              <div 
-                v-for="(step, idx) in flows[activeFlow].steps" 
-                :key="idx"
-                class="step-card"
-                :style="{ animationDelay: `${idx * 0.1}s` }"
-              >
-                <div class="step-number">{{ idx + 1 }}</div>
-                <div class="step-content">
-                  <h3>{{ step.title }}</h3>
-                  <p>{{ step.description }}</p>
-                </div>
-                <div class="step-icon">
-                  <component :is="step.icon" size="32" color="#0D4715" />
-                </div>
-              </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div 
+            v-for="(step, idx) in flows[activeFlow].steps" 
+            :key="idx"
+            class="group relative bg-white p-6 lg:p-8 rounded-[24px] lg:rounded-[32px] border-2 border-gray-50 hover:border-emerald-100 hover:shadow-2xl hover:shadow-emerald-100/50 transition-all active:scale-95 animate-fade-up"
+            :style="{ animationDelay: `${idx * 0.1}s` }"
+          >
+            <div class="w-12 h-12 lg:w-16 lg:h-16 bg-emerald-50 text-emerald-600 rounded-xl lg:rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-500 shadow-sm">
+              <component :is="step.heroIcon" class="w-6 h-6 lg:w-8 lg:h-8" />
             </div>
-          </transition>
+            <div class="absolute top-6 right-6 lg:top-8 lg:right-8 text-3xl lg:text-4xl font-black text-gray-100 group-hover:text-emerald-50 transition-colors">0{{ idx + 1 }}</div>
+            <h3 class="text-lg lg:text-xl font-black text-gray-900 mb-2 lg:mb-3 tracking-tight">{{ step.title }}</h3>
+            <p class="text-sm lg:text-base text-gray-500 leading-relaxed font-medium">{{ step.description }}</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features">
-      <div class="container">
-        <h2 class="section-title">Store Features</h2>
-        <p class="section-subtitle">Everything you need to run your online store successfully</p>
+    <section id="features" class="py-24 lg:py-32 bg-gray-50">
+      <div class="container mx-auto px-4 lg:px-6">
+        <div class="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+          <h2 class="text-3xl lg:text-5xl font-black text-gray-900 mb-4 lg:mb-6 underline decoration-emerald-500/10 decoration-8 underline-offset-8">Powerful Features</h2>
+          <p class="text-lg lg:text-xl text-gray-500 font-medium">Standard tools designed for extraordinary business owners.</p>
+        </div>
         
-        <div class="features-grid">
-          <div v-for="(feature, index) in features" :key="index" class="feature-card">
-            <div class="feature-icon">
-              <component :is="feature.icon" size="48" color="white" />
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+          <div v-for="(feature, index) in features" :key="index" 
+            class="bg-white p-6 lg:p-8 rounded-[30px] lg:rounded-[40px] shadow-lg shadow-gray-200/50 hover:shadow-2xl hover:shadow-emerald-200/50 hover:-translate-y-2 transition-all duration-500 border border-gray-100 group">
+            <div class="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl lg:rounded-2xl flex items-center justify-center mb-6 lg:mb-8 shadow-lg shadow-emerald-200 group-hover:rotate-6 transition-transform">
+              <component :is="feature.heroIcon" class="w-6 h-6 lg:w-8 lg:h-8 text-white" />
             </div>
-            <h3>{{ feature.title }}</h3>
-            <p>{{ feature.description }}</p>
+            <h3 class="text-lg lg:text-xl font-black text-gray-900 mb-3 lg:mb-4 tracking-tight">{{ feature.title }}</h3>
+            <p class="text-sm lg:text-base text-gray-500 font-medium leading-relaxed">{{ feature.description }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-      <div class="container">
-        <h2 class="section-title">What Our Users Say</h2>
-        <p class="section-subtitle">See how other store owners are succeeding</p>
+    <!-- Testimonials -->
+    <section class="py-24 lg:py-32 bg-white">
+      <div class="container mx-auto px-4 lg:px-6 text-center">
+        <div class="mb-16 lg:mb-20 space-y-4">
+          <h2 class="text-3xl lg:text-5xl font-black text-gray-900 underline decoration-green-500/10 decoration-8 underline-offset-8">Success Stories</h2>
+          <p class="text-lg lg:text-xl text-gray-500 font-medium tracking-tight">Listen to our sellers who redefined their business.</p>
+        </div>
 
-        <div class="testimonials-grid">
-          <div class="testimonial-card">
-            <div class="testimonial-content">
-              <p>"ISellOnline changed my business completely! I went from zero to 500 customers in just 2 weeks. Using WhatsApp is so easy."</p>
-            </div>
-            <div class="testimonial-author">
-              <div class="author-avatar">
-                <User size="24" color="white" />
-              </div>
-              <div class="author-info">
-                <h4>Sarah Johnson</h4>
-                <p>Fashion Store Owner</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="testimonial-card">
-            <div class="testimonial-content">
-              <p>"Managing my products through WhatsApp saves me hours every day. The system understands exactly what I want to do."</p>
-            </div>
-            <div class="testimonial-author">
-              <div class="author-avatar">
-                <ChefHat size="24" color="white" />
-              </div>
-              <div class="author-info">
-                <h4>Michael Chen</h4>
-                <p>Restaurant Supplies</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="testimonial-card">
-            <div class="testimonial-content">
-              <p>"Getting my own web address made my store look professional. Customers love how smooth everything works."</p>
-            </div>
-            <div class="testimonial-author">
-              <div class="author-avatar">
-                <Palette size="24" color="#0D4715" />
-              </div>
-              <div class="author-info">
-                <h4>Amina Hassan</h4>
-                <p>Art & Crafts</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 text-left">
+          <div v-for="(test, i) in testimonials" :key="i" 
+            class="bg-gray-50 p-8 lg:p-10 rounded-[30px] lg:rounded-[48px] relative group hover:bg-emerald-950 transition-colors duration-700">
+            <p class="text-base lg:text-lg text-gray-700 font-medium leading-relaxed italic z-10 relative group-hover:text-emerald-50 transition-colors h-36 lg:h-40 overflow-hidden">
+               {{ test.content }}
+            </p>
+            <div class="mt-8 flex items-center gap-4 border-t border-gray-200 pt-8 group-hover:border-emerald-800 transition-colors">
+              <img :src="test.avatar" class="w-12 h-12 lg:w-16 lg:h-16 rounded-xl lg:rounded-2xl object-cover shadow-xl grayscale group-hover:grayscale-0 transition-all duration-700" />
+              <div>
+                <h4 class="text-base lg:text-lg font-black text-gray-900 group-hover:text-white transition-colors tracking-tight">{{ test.name }}</h4>
+                <p class="text-xs lg:text-sm text-emerald-600 font-bold group-hover:text-emerald-400 transition-colors">{{ test.business }}</p>
               </div>
             </div>
           </div>
@@ -241,188 +239,79 @@
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
-      <div class="container">
-        <h2 class="section-title">Choose Your Plan</h2>
-        <p class="section-subtitle">Select the perfect plan for your business needs</p>
-
-        <div class="pricing-grid">
-          <div class="pricing-card">
-            <div class="pricing-header">
-              <h3>Free</h3>
-              <div class="price">₦0<span>/month</span></div>
-            </div>
-            <ul class="pricing-features">
-              <li>15 Products</li>
-              <li>Basic WhatsApp Support</li>
-              <li>Standard Templates</li>
-              <li>Basic Analytics</li>
-            </ul>
-            <button class="pricing-btn">Get Started Free</button>
-          </div>
-
-          <div class="pricing-card popular">
-            <div class="pricing-badge">Most Popular</div>
-            <div class="pricing-header">
-              <h3>Starter</h3>
-              <div class="price">₦4,599<span>/month</span></div>
-            </div>
-            <ul class="pricing-features">
-              <li>100 Products</li>
-              <li>Priority WhatsApp Support</li>
-              <li>Custom Branding</li>
-              <li>Advanced Analytics</li>
-              <li>Payment Integration</li>
-            </ul>
-            <button class="pricing-btn primary">Choose Starter</button>
-          </div>
-
-          <div class="pricing-card">
-            <div class="pricing-header">
-              <h3>Pro</h3>
-              <div class="price">₦10,000<span>/month</span></div>
-            </div>
-            <ul class="pricing-features">
-              <li>250 Products</li>
-              <li>3 Premium Themes</li>
-              <li>Advanced Document Analytics</li>
-              <li>Custom Domain Support</li>
-              <li>24/7 Priority Support</li>
-              <li>Bulk Product Management</li>
-            </ul>
-            <button class="pricing-btn">Choose Pro</button>
-          </div>
-
-          <div class="pricing-card">
-            <div class="pricing-header">
-              <h3>Enterprise</h3>
-              <div class="price">₦25,000<span>/month</span></div>
-            </div>
-            <ul class="pricing-features">
-              <li>Unlimited Products</li>
-              <li>5 Premium Themes</li>
-              <li>Free .ng Domain</li>
-              <li>Top Store Listing</li>
-              <li>Dedicated Account Manager</li>
-              <li>Custom Integrations</li>
-              <li>Advanced Reporting</li>
-            </ul>
-            <button class="pricing-btn">Contact Sales</button>
-          </div>
+    <section id="pricing" class="py-24 lg:py-32 bg-emerald-950 px-4 lg:px-6">
+      <div class="container mx-auto max-w-7xl">
+        <div class="text-center mb-16 lg:mb-24 max-w-3xl mx-auto">
+          <h2 class="text-4xl lg:text-6xl font-black text-white mb-6 lg:mb-8 tracking-tight">Ready to <span class="text-emerald-500 underline decoration-emerald-500/20 underline-offset-8">Scale?</span></h2>
+          <p class="text-lg lg:text-xl text-emerald-50/60 font-medium">No hidden fees. No complicated setups. Just pure growth.</p>
         </div>
-      </div>
-    </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-      <div class="container">
-        <div class="contact-content">
-          <h2>Need Help?</h2>
-          <p>Our friendly support team is here to help you anytime</p>
-          <div class="contact-methods">
-            <a :href="`tel:${supportPhone}`" class="contact-card">
-              <div class="contact-icon">
-                <Phone size="48" color="#0D4715" />
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div v-for="(plan, i) in pricingPlans" :key="i" 
+            class="relative flex flex-col bg-emerald-900/30 backdrop-blur-3xl p-6 lg:p-8 rounded-[30px] lg:rounded-[48px] border border-emerald-400/10 hover:border-emerald-400/30 transition-all duration-500 group overflow-hidden"
+            :class="{ 'scale-105 lg:scale-110 border-emerald-400/40 bg-emerald-900/50 shadow-3xl shadow-emerald-500/10 z-10': plan.popular }">
+            
+            <div v-if="plan.popular" class="absolute top-0 right-0 bg-emerald-400 text-emerald-950 py-1.5 px-6 lg:px-8 rounded-bl-3xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest shadow-lg">Recommended</div>
+            
+            <div class="mb-8 lg:mb-10">
+              <h3 class="text-xl lg:text-2xl font-black text-white mb-2 tracking-tight">{{ plan.name }}</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl lg:text-4xl font-black text-white">₦{{ plan.price }}</span>
+                <span class="text-emerald-400/60 font-bold text-sm">/mo</span>
               </div>
-              <div class="contact-info">
-                <h4>Call Us</h4>
-                <p>{{ supportPhone }}</p>
-              </div>
-            </a>
-            <a :href="`mailto:${supportEmail}`" class="contact-card">
-              <div class="contact-icon">
-                <Mail size="48" color="#0D4715" />
-              </div>
-              <div class="contact-info">
-                <h4>Email Us</h4>
-                <p>{{ supportEmail }}</p>
-              </div>
-            </a>
+            </div>
+
+            <ul class="space-y-3 lg:space-y-4 mb-8 lg:mb-12 flex-grow">
+              <li v-for="feat in plan.features" :key="feat" class="flex items-center gap-2 lg:gap-3 text-emerald-50/80 font-medium text-[13px] lg:text-sm">
+                <CheckBadgeIcon class="w-4 h-4 lg:w-5 lg:h-5 text-emerald-400 flex-shrink-0" />
+                <span>{{ feat }}</span>
+              </li>
+            </ul>
+
+            <button class="w-full py-4 lg:py-5 rounded-xl lg:rounded-2xl font-black text-base lg:text-lg transition-all duration-500 active:scale-95 shadow-lg"
+              :class="plan.popular ? 'bg-emerald-400 text-emerald-950 shadow-emerald-400/20 hover:bg-white' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'">
+              Choose Plan
+            </button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <!-- Company Info -->
-          <div class="footer-section company-info">
-            <div class="footer-logo">
-              <h3>ISellOnline</h3>
-            </div>
-            <p>Transform your WhatsApp conversations into a complete online store. No technical skills required - just chat and sell!</p>
-            <div class="contact-info">
-              <p><Phone size="16" /> {{ supportPhone }}</p>
-              <p><Mail size="16" /> {{ supportEmail }}</p>
-            </div>
+    <footer class="bg-gray-50 border-t border-gray-100 py-20 lg:py-32">
+      <div class="container mx-auto px-4 lg:px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16 mb-20 lg:mb-24">
+          <div class="lg:col-span-1 space-y-6 lg:space-y-8">
+             <div class="flex items-center gap-3">
+               <img :src="'/assets/logo_main.png'" alt="ISellOnline Logo" class="h-8 lg:h-10" />
+               <span class="text-2xl font-black text-gray-900 tracking-tight">ISellOnline</span>
+             </div>
+             <p class="text-lg text-gray-500 font-medium leading-relaxed pr-4">
+               The world's first AI-powered WhatsApp creator for entrepreneurs. No code, just growth.
+             </p>
+             <div class="flex gap-3">
+               <a v-for="i in 4" :key="i" href="#" class="w-10 h-10 lg:w-12 lg:h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 hover:text-emerald-600 hover:border-emerald-600 transition-all hover:-translate-y-1">
+                 <component :is="socialIcons[i-1]" class="w-4 h-4 lg:w-5 lg:h-5" />
+               </a>
+             </div>
           </div>
-
-          <!-- Product Links -->
-          <div class="footer-section">
-            <h4>Product</h4>
-            <ul>
-              <li><a href="#features">Features</a></li>
-              <li><a href="#pricing">Pricing</a></li>
-              <li><a href="#how-it-works">How It Works</a></li>
-              <li><a href="#">API Documentation</a></li>
-              <li><a href="#">Integrations</a></li>
-            </ul>
-          </div>
-
-          <!-- Company Links -->
-          <div class="footer-section">
-            <h4>Company</h4>
-            <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Press</a></li>
-              <li><a href="#">Partners</a></li>
-            </ul>
-          </div>
-
-          <!-- Support Links -->
-          <div class="footer-section">
-            <h4>Support</h4>
-            <ul>
-              <li><a href="#contact">Contact Us</a></li>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Status</a></li>
-            </ul>
-          </div>
-
-          <!-- Social & Newsletter -->
-          <div class="footer-section social-newsletter">
-            <h4>Stay Connected</h4>
-            <p>Follow us for updates and tips</p>
-            <div class="social-links">
-              <a href="#" aria-label="Facebook"><Facebook size="20" /></a>
-              <a href="#" aria-label="Twitter"><Twitter size="20" /></a>
-              <a href="#" aria-label="Instagram"><Instagram size="20" /></a>
-              <a href="#" aria-label="LinkedIn"><Linkedin size="20" /></a>
-              <a href="#" aria-label="YouTube"><Youtube size="20" /></a>
-            </div>
-            <div class="newsletter">
-              <p>Get the latest updates</p>
-              <div class="newsletter-input">
-                <input type="email" placeholder="Enter your email" />
-                <button type="submit">Subscribe</button>
-              </div>
-            </div>
+          
+          <div v-for="(section, title) in footerLinks" :key="title">
+             <h4 class="text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-6 lg:mb-8">{{ title }}</h4>
+             <ul class="space-y-4 lg:space-y-6">
+               <li v-for="link in section" :key="link.name">
+                 <a :href="link.href" class="text-[14px] lg:text-[15px] text-gray-500 font-bold hover:text-emerald-600 transition-all">{{ link.name }}</a>
+               </li>
+             </ul>
           </div>
         </div>
-
-        <!-- Footer Bottom -->
-        <div class="footer-bottom">
-          <p>&copy; 2026 ISellOnline. All rights reserved.</p>
-          <div class="footer-bottom-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Cookie Policy</a>
+        
+        <div class="pt-10 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6 lg:gap-8">
+          <p class="text-gray-400 font-bold uppercase text-[10px] tracking-widest text-center lg:text-left">&copy; 2026 ISellOnline AI. Deepmind Research Tool.</p>
+          <div class="flex gap-6 lg:gap-10">
+            <a href="#" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Privacy</a>
+            <a href="#" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Terms</a>
+            <a href="#" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Status</a>
           </div>
         </div>
       </div>
@@ -430,1253 +319,236 @@
   </div>
 </template>
 
-<script>
-import {
-  MessageSquareX,
-  Cloud,
-  Search,
-  ShoppingBag,
-  Globe,
-  CheckCircle,
-  Zap,
-  Brain,
-  Wrench,
-  Database,
-  Bell,
-  Lock,
-  BarChart3,
-  Smartphone,
-  CreditCard,
-  Phone,
-  Mail,
-  User,
-  ChefHat,
-  Palette,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Youtube
-} from 'lucide-vue-next';
+<script setup>
+import { ref, onMounted, nextTick } from 'vue';
+import { 
+  ChatBubbleLeftRightIcon,
+  Bars3Icon,
+  XMarkIcon,
+  BoltIcon,
+  ArrowRightIcon,
+  StarIcon,
+  PlayCircleIcon,
+  ShoppingBagIcon,
+  CheckBadgeIcon,
+  GlobeAltIcon,
+  AcademicCapIcon,
+  WrenchIcon,
+  ServerIcon,
+  BellIcon,
+  LockClosedIcon,
+  ChartBarIcon,
+  DevicePhoneMobileIcon,
+  CreditCardIcon,
+  EnvelopeIcon,
+  FaceSmileIcon,
+  PaperClipIcon,
+  CameraIcon
+} from '@heroicons/vue/24/outline';
 
-export default {
-  name: 'App',
-  components: {
-    MessageSquareX,
-    Cloud,
-    Search,
-    ShoppingBag,
-    Globe,
-    CheckCircle,
-    Zap,
-    Brain,
-    Wrench,
-    Database,
-    Bell,
-    Lock,
-    BarChart3,
-    Smartphone,
-    Facebook,
-    Twitter,
-    Instagram,
-    Linkedin,
-    Youtube,
-    CreditCard,
-    Phone,
-    Mail,
-    User,
-    ChefHat,
-    Palette
-  },
-  data() {
-    return {
-      tagline: window.tagline || 'Simple Online Stores via WhatsApp',
-      supportPhone: '+1234567890',
-      supportEmail: 'support@isellonline.com',
-      loaded: false,
-      activeFlow: 0,
-      mobileMenuOpen: false,
-      flows: [
-        {
-          name: 'Store Setup',
-          steps: [
-            { icon: 'MessageSquareX', title: 'Send WhatsApp Message', description: 'You start by sending a message on WhatsApp' },
-            { icon: 'Cloud', title: 'Message Processing', description: 'Your message is received and processed' },
-            { icon: 'Search', title: 'Account Check', description: 'We check if you have an account with us' },
-            { icon: 'ShoppingBag', title: 'Quick Setup', description: 'New users go through simple setup steps' },
-            { icon: 'Database', title: 'Store Creation', description: 'Your store information is saved' },
-            { icon: 'Globe', title: 'Store URL Creation', description: 'We create your unique store web address' },
-            { icon: 'CheckCircle', title: 'Confirmation', description: 'Your store link is sent back via WhatsApp' }
-          ]
-        },
-        {
-          name: 'Store Management',
-          steps: [
-            { icon: 'MessageSquareX', title: 'WhatsApp Command', description: 'You send a command through WhatsApp' },
-            { icon: 'Brain', title: 'Smart Understanding', description: 'Our system understands what you want to do' },
-            { icon: 'CheckCircle', title: 'Permission Check', description: 'We verify you can make this change' },
-            { icon: 'Wrench', title: 'Process Request', description: 'Add products, update prices, manage stock' },
-            { icon: 'Database', title: 'Save Changes', description: 'All your changes are saved securely' },
-            { icon: 'Bell', title: 'WhatsApp Confirmation', description: 'You get a confirmation message on WhatsApp' }
-          ]
-        },
-        {
-          name: 'Customer Shopping',
-          steps: [
-            { icon: 'Globe', title: 'Visit Store', description: 'Customer finds your store online' },
-            { icon: 'Search', title: 'Website Routing', description: 'Their browser connects to your store' },
-            { icon: 'Cloud', title: 'Connection Routing', description: 'Request is directed to the right place' },
-            { icon: 'Search', title: 'Store Recognition', description: 'System identifies your specific store' },
-            { icon: 'Cloud', title: 'Data Request', description: 'Store information is retrieved' },
-            { icon: 'ShoppingBag', title: 'Store Loading', description: 'Your store page appears for the customer' },
-            { icon: 'Zap', title: 'Show Store', description: 'Customer sees your products and information' },
-            { icon: 'CreditCard', title: 'Order & Payment', description: 'Customer places order and pays' },
-            { icon: 'MessageSquareX', title: 'Order Notification', description: 'You receive order details on WhatsApp' }
-          ]
-        }
-      ],
-      features: [
-        { icon: 'Zap', title: 'Quick Setup', description: 'Get your store ready in just a few minutes using WhatsApp' },
-        { icon: 'Brain', title: 'Smart Assistant', description: 'Just type what you want to do in normal language' },
-        { icon: 'Globe', title: 'Your Own Web Address', description: 'Get a professional web address for your store right away' },
-        { icon: 'CreditCard', title: 'Easy Payments', description: 'Accept payments from customers without extra setup' },
-        { icon: 'Smartphone', title: 'Works on Phones', description: 'Your store looks great and works perfectly on mobile devices' },
-        { icon: 'BarChart3', title: 'Sales Tracking', description: 'See your sales and customer activity in real-time' },
-        { icon: 'Bell', title: 'Order Alerts', description: 'Receive instant notifications about new orders on WhatsApp' },
-        { icon: 'Lock', title: 'Safe & Secure', description: 'Your store and customer data are fully protected' }
-      ]
-    }
-  },
-  mounted() {
-    setTimeout(() => {
-      this.loaded = true;
-    }, 100);
-  },
-  methods: {
-    toggleMobileMenu() {
-      this.mobileMenuOpen = !this.mobileMenuOpen;
-    }
+const scrolled = ref(false);
+const mobileMenuOpen = ref(false);
+const activeFlow = ref(0);
+const tagline = window.tagline || 'Simple Online Stores via WhatsApp';
+const chatContainer = ref(null);
+
+const heroImage = '/images/hero.png';
+
+const allMessages = [
+  { role: 'user', text: 'Hi! I want to create an online store', time: '9:41 AM' },
+  { role: 'ai', text: 'Great! Let\'s get started. What\'s your store name?', time: '9:42 AM' },
+  { role: 'user', text: 'TechGadgets Pro', time: '9:42 AM' },
+  { role: 'ai', text: '✅ Perfect! Your store is ready at:\n**techgadgets.isellonline.com**', time: '9:43 AM' },
+  { role: 'user', text: 'Add product: iPhone 15 Pro, ₦850,000, 10 in stock', time: '9:45 AM' },
+  { role: 'ai', text: '📱 Product added successfully! iPhone 15 Pro - ₦850,000 (10 units)', time: '9:45 AM' },
+  { role: 'user', text: 'Add Samsung Galaxy S24, ₦750,000', time: '9:46 AM' },
+  { role: 'ai', text: '📱 Added Samsung Galaxy S24 - ₦750,000', time: '9:46 AM' },
+  { role: 'user', text: 'Show my wallet balance', time: '9:50 AM' },
+  { role: 'ai', text: '💰 Your wallet balance: ₦25,000\nAvailable for domain purchase', time: '9:50 AM' },
+  { role: 'user', text: 'Can I purchase this domain?', time: '9:51 AM' },
+  { role: 'ai', text: '🌐 Domain purchase: ₦15,000/year\nYour balance: ₦25,000\nProceed with payment?', time: '9:52 AM' },
+  { role: 'user', text: 'Yes, pay from wallet', time: '9:55 AM' },
+  { role: 'ai', text: '💳 Payment processed! ₦15,000 deducted.\nDomain is now yours! 🎉', time: '9:56 AM' },
+  { role: 'user', text: 'Update iPhone price to ₦800,000', time: '10:00 AM' },
+  { role: 'ai', text: '📈 Price updated! iPhone 15 Pro now ₦800,000', time: '10:01 AM' },
+  { role: 'user', text: 'Check today\'s sales', time: '10:05 AM' },
+  { role: 'ai', text: '📊 Today\'s sales: ₦0\n3 visitors to your store\nKeep up the great work!', time: '10:06 AM' }
+];
+
+const activeMessages = ref([]);
+
+const scrollToBottom = async () => {
+  await nextTick();
+  if (chatContainer.value) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
   }
-}
+};
+
+const simulateChat = () => {
+  let i = 0;
+  activeMessages.value = [];
+  const interval = setInterval(() => {
+    if (i < allMessages.length) {
+      activeMessages.value.push(allMessages[i]);
+      i++;
+      scrollToBottom();
+    } else {
+      setTimeout(() => {
+        i = 0;
+        activeMessages.value = [];
+      }, 5000);
+    }
+  }, 2500);
+};
+
+onMounted(() => {
+  simulateChat();
+  window.addEventListener('scroll', () => {
+    scrolled.value = window.scrollY > 20;
+  });
+});
+
+const flows = [
+  {
+    name: 'Store Setup',
+    steps: [
+      { heroIcon: ChatBubbleLeftRightIcon, title: 'Send WhatsApp', description: 'Start by sending a message from your WhatsApp app.' },
+      { heroIcon: ServerIcon, title: 'Processing', description: 'Our AI processes your request in milliseconds.' },
+      { heroIcon: GlobeAltIcon, title: 'Live Store', description: 'Get a professional URL (yourname.isellonline.com) instantly.' }
+    ]
+  },
+  {
+    name: 'Management',
+    steps: [
+      { heroIcon: AcademicCapIcon, title: 'Smart Commands', description: 'Add products, prices, and stock via simple text messages.' },
+      { heroIcon: WrenchIcon, title: 'Permission Check', description: 'Secure access ensures only you can modify your store content.' },
+      { heroIcon: BellIcon, title: 'Live Alerts', description: 'Get instant notifications for orders and inventory updates.' }
+    ]
+  },
+  {
+    name: 'Customer Flow',
+    steps: [
+      { heroIcon: ShoppingBagIcon, title: 'Visit Web Store', description: 'Customers browse your beautiful mobile-optimized interface.' },
+      { heroIcon: CreditCardIcon, title: 'Secure Checkout', description: 'Customers pay safely via integrated localized gateways.' },
+      { heroIcon: EnvelopeIcon, title: 'Order Details', description: 'Get complete order summaries sent directly to your chat.' }
+    ]
+  }
+];
+
+const features = [
+  { heroIcon: BoltIcon, title: 'Instant Setup', description: 'Zero configuration. Just message and sell instantly.' },
+  { heroIcon: AcademicCapIcon, title: 'AI Assistant', description: 'Human-like understanding of your business commands.' },
+  { heroIcon: GlobeAltIcon, title: 'Custom Domains', description: 'Professional identity at your fingertips.' },
+  { heroIcon: CreditCardIcon, title: 'Safe Payments', description: 'Integrated wallet and bank transfers.' },
+  { heroIcon: DevicePhoneMobileIcon, title: 'Mobile First', description: 'Optimized for the next billion users.' },
+  { heroIcon: ChartBarIcon, title: 'Analytics', description: 'Track your growth with real-time dashboards.' },
+  { heroIcon: BellIcon, title: 'Live Notifications', description: 'Never miss an order update ever again.' },
+  { heroIcon: LockClosedIcon, title: 'Enterprise Security', description: 'Bank-level encryption for all your data.' }
+];
+
+const testimonials = [
+  { 
+    name: 'Sarah Johnson', 
+    business: 'Fashion Boutique', 
+    content: "ISellOnline changed my business completely! I went from zero to 500 customers in just 2 weeks. Using WhatsApp is so easy.",
+    avatar: '/images/avatar_sarah.png'
+  },
+  { 
+    name: 'Michael Chen', 
+    business: 'Supply Hub', 
+    content: "Managing my products through WhatsApp saves me hours every day. The system understands exactly what I want to do.",
+    avatar: '/images/avatar_michael.png'
+  },
+  { 
+    name: 'Amina Hassan', 
+    business: 'Handmade Crafts', 
+    content: "Getting my own web address made my store look professional. Customers love how smooth everything works.",
+    avatar: '/images/avatar_amina.png'
+  }
+];
+
+const pricingPlans = [
+  { name: 'Free', price: '0', features: ['15 Products', 'Basic Support', 'Standard Store URL', 'Basic Analytics'] },
+  { name: 'Starter', price: '4,599', popular: true, features: ['100 Products', 'Priority Support', 'Custom Branding', 'Advanced Analytics', 'Payment Integration'] },
+  { name: 'Pro', price: '10,000', features: ['250 Products', '3 Premium Themes', 'Custom Domain Support', '24/7 Support', 'Bulk Product Manager'] },
+  { name: 'Elite', price: '25,000', features: ['Unlimited Products', 'Free .ng Domain', 'Dedicated Manager', 'Custom Integrations', 'Priority Listing'] }
+];
+
+const footerLinks = {
+  'Product': [
+    { name: 'Features', href: '#features' },
+    { name: 'Pricing', href: '#pricing' },
+    { name: 'How It Works', href: '#how-it-works' }
+  ],
+  'Company': [
+    { name: 'About', href: '#' },
+    { name: 'Blog', href: '#' },
+    { name: 'Careers', href: '#' },
+    { name: 'Support', href: '#' }
+  ],
+  'Support': [
+    { name: 'Privacy', href: '#' },
+    { name: 'Terms', href: '#' },
+    { name: 'Security', href: '#' },
+    { name: 'Contact', href: '#contact' }
+  ]
+};
+
+const socialIcons = [ChatBubbleLeftRightIcon, GlobeAltIcon, ServerIcon, AcademicCapIcon];
 </script>
 
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;600;700;800&display=swap');
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
 
-* {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-#app {
-  font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #1a1a1a;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  min-height: 100vh;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* Navbar */
-.navbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 20px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-}
-
-.navbar .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.brand-name {
-  font-size: 24px;
-  font-weight: 800;
-  color: #0D4715;
-  margin: 0;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.nav-brand .tagline {
-  font-size: 12px;
-  color: #666;
-  margin: 0;
-}
-
-.nav-links {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-.nav-links a {
-  color: #333;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.nav-links a:hover {
-  color: #0D4715;
-}
-
-.cta-btn {
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.cta-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(13, 71, 21, 0.4);
-}
-
-.mobile-menu-toggle {
-  display: none;
-  flex-direction: column;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  gap: 4px;
-}
-
-.mobile-menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background: #333;
-  transition: 0.3s;
-  transform-origin: center;
-}
-
-.mobile-menu-toggle.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.mobile-menu-toggle.active span:nth-child(2) {
-  opacity: 0;
-}
-
-.mobile-menu-toggle.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -6px);
-}
-
-/* Hero Section */
-.hero {
-  padding: 100px 0;
-  color: white;
-}
-
-.hero .container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
-}
-
-.hero-content {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.hero-content.fade-in {
-  animation: fadeInUp 0.8s forwards;
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hero-title {
-  font-size: 56px;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 20px;
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: block;
-}
-
-.hero-subtitle {
-  font-size: 18px;
-  line-height: 1.6;
-  opacity: 0.9;
-  margin-bottom: 40px;
-}
-
-.hero-cta {
-  display: flex;
-  gap: 20px;
-}
-
-.btn-primary, .btn-secondary {
-  padding: 16px 32px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: none;
-}
-
-.btn-primary {
-  background: white;
-  color: #0D4715;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid white;
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Phone Mockup */
-.hero-visual {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.hero-visual.slide-in {
-  animation: slideInRight 0.8s 0.3s forwards;
-}
-
-@keyframes slideInRight {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.phone-mockup {
-  background: #1a1a1a;
-  border-radius: 30px;
-  padding: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.whatsapp-chat {
-  background: #0d1418;
-  border-radius: 20px;
-  padding: 20px;
-  height: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
   overflow-x: hidden;
 }
 
-
-
-.chat-message {
-  max-width: 70%;
-  padding: 12px 16px;
-  border-radius: 12px;
-  animation: messageSlide 0.6s ease-out forwards;
-  opacity: 0;
+#app {
+  font-family: 'Ubuntu', sans-serif;
+  background: #022c22;
 }
 
-.chat-message:nth-child(1) { animation-delay: 0.2s; }
-.chat-message:nth-child(2) { animation-delay: 0.6s; }
-.chat-message:nth-child(3) { animation-delay: 1.0s; }
-.chat-message:nth-child(4) { animation-delay: 1.4s; }
-.chat-message:nth-child(5) { animation-delay: 1.8s; }
-.chat-message:nth-child(6) { animation-delay: 2.2s; }
-.chat-message:nth-child(7) { animation-delay: 2.6s; }
-.chat-message:nth-child(8) { animation-delay: 3.0s; }
-.chat-message:nth-child(9) { animation-delay: 3.4s; }
-.chat-message:nth-child(10) { animation-delay: 3.8s; }
-.chat-message:nth-child(11) { animation-delay: 4.2s; }
-.chat-message:nth-child(12) { animation-delay: 4.6s; }
-.chat-message:nth-child(13) { animation-delay: 5.0s; }
-.chat-message:nth-child(14) { animation-delay: 5.4s; }
-.chat-message:nth-child(15) { animation-delay: 5.8s; }
-.chat-message:nth-child(16) { animation-delay: 6.2s; }
-.chat-message:nth-child(17) { animation-delay: 6.6s; }
-.chat-message:nth-child(18) { animation-delay: 7.0s; }
-.chat-message:nth-child(19) { animation-delay: 7.4s; }
-.chat-message:nth-child(20) { animation-delay: 7.8s; }
-
-@keyframes messageSlide {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
 }
-
-
-
-.chat-message.received {
-  background: #1f2c34;
-  color: white;
-  align-self: flex-start;
-}
-
-.chat-message.sent {
-  background: #005c4b;
-  color: white;
-  align-self: flex-end;
-}
-
-.chat-message p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-/* How It Works Section */
-.how-it-works {
-  background: white;
-  padding: 100px 0;
-}
-
-.section-title {
-  font-size: 42px;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.section-subtitle {
-  text-align: center;
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 60px;
-}
-
-.flow-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-
-.tab-btn {
-  padding: 12px 24px;
-  border: 2px solid #e0e0e0;
-  background: white;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  color: #666;
-}
-
-.tab-btn.active {
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  color: white;
-  border-color: transparent;
-  box-shadow: 0 5px 20px rgba(13, 71, 21, 0.3);
-}
-
-.tab-btn:hover:not(.active) {
-  border-color: #0D4715;
-  color: #0D4715;
-}
-
-.flow-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.step-card {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 16px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: fadeInScale 0.5s ease-out backwards;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.step-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.step-number {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.step-content h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.step-content p {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.step-icon {
-  font-size: 32px;
-  text-align: right;
-}
-
-/* Features Section */
-.features {
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  padding: 100px 0;
-  color: white;
-}
-
-.features .section-title {
-  color: white;
-  background: none;
-  -webkit-text-fill-color: white;
-}
-
-.features .section-subtitle {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-}
-
-.feature-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 30px;
-  text-align: center;
-  transition: all 0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.feature-card:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.feature-icon {
-  font-size: 48px;
-  margin-bottom: 20px;
-}
-
-.feature-card h3 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.feature-card p {
-  font-size: 14px;
-  opacity: 0.9;
-  line-height: 1.6;
-}
-
-/* Testimonials Section */
-.testimonials {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 100px 0;
-}
-
-.testimonials .section-title {
-  color: #1a1a1a;
-  background: none;
-  -webkit-text-fill-color: #1a1a1a;
-}
-
-.testimonials .section-subtitle {
-  color: #666;
-}
-
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-top: 60px;
-}
-
-.testimonial-card {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.testimonial-content p {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #333;
-  margin-bottom: 20px;
-  font-style: italic;
-}
-
-.testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.author-avatar {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-.author-info h4 {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.author-info p {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-}
-
-/* Pricing Section */
-.pricing {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 100px 0;
-}
-
-.pricing .section-title {
-  color: #1a1a1a;
-  background: none;
-  -webkit-text-fill-color: #1a1a1a;
-}
-
-.pricing .section-subtitle {
-  color: #666;
-}
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  margin-top: 60px;
-}
-
-@media (min-width: 1200px) {
-  .pricing-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.pricing-card {
-  background: white;
-  border-radius: 16px;
-  padding: 40px 30px;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
-  border: 2px solid transparent;
-}
-
-.pricing-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-}
-
-.pricing-card.popular {
-  border-color: #0D4715;
-  transform: scale(1.05);
-}
-
-.pricing-card.popular:hover {
-  transform: scale(1.05) translateY(-5px);
-}
-
-.pricing-badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.pricing-header h3 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 10px;
-}
-
-.price {
-  font-size: 36px;
-  font-weight: 800;
-  color: #0D4715;
-  margin-bottom: 30px;
-}
-
-.price span {
-  font-size: 16px;
-  font-weight: 400;
-  color: #666;
-}
-
-.pricing-features {
-  list-style: none;
-  padding: 0;
-  margin: 30px 0;
-  text-align: left;
-}
-
-.pricing-features li {
-  padding: 8px 0;
-  color: #555;
-  position: relative;
-  padding-left: 20px;
-}
-
-.pricing-features li:before {
-  content: "✓";
-  color: #0D4715;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
-}
-
-.pricing-btn {
-  width: 100%;
-  padding: 14px 24px;
-  border: 2px solid #0D4715;
+.custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
-  color: #0D4715;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-top: 20px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
 }
 
-.pricing-btn:hover {
-  background: #0D4715;
-  color: white;
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.pricing-btn.primary {
-  background: #0D4715;
-  color: white;
+@keyframes fade-up-short {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.pricing-btn.primary:hover {
-  background: #1a7a2e;
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
 }
 
-/* Contact Section */
-.contact {
-  background: white;
-  padding: 100px 0;
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
-.contact-content {
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.contact-content h2 {
-  font-size: 42px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.contact-content > p {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 40px;
-}
-
-.contact-methods {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  margin-top: 40px;
-}
-
-.contact-card {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 16px;
-  padding: 30px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s;
-}
-
-.contact-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.contact-icon {
-  font-size: 48px;
-}
-
-.contact-info {
-  text-align: left;
-}
-
-.contact-info h4 {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 5px;
-  color: #1a1a1a;
-}
-
-.contact-info p {
-  font-size: 16px;
-  color: #0D4715;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* Footer */
-.footer {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 60px 0 20px;
-  margin-top: 60px;
-}
-
-.footer-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
-  gap: 40px;
-  margin-bottom: 40px;
-}
-
-.footer-section {
-  min-width: 0;
-}
-
-.footer-section h4 {
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.footer-section h4::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 30px;
-  height: 2px;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  border-radius: 1px;
-}
-
-.footer-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-section ul li {
-  margin-bottom: 12px;
-}
-
-.footer-section ul li a {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  font-size: 14px;
-  transition: all 0.3s;
-  display: inline-block;
-}
-
-.footer-section ul li a:hover {
-  color: white;
-  transform: translateX(5px);
-}
-
-/* Company Info */
-.company-info .footer-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.footer-logo-img {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-}
-
-.company-info h3 {
-  font-size: 20px;
-  font-weight: 800;
-  color: white;
-  margin: 0;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.company-info > p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.contact-info p {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  margin: 8px 0;
-}
-
-.contact-info svg {
-  color: #0D4715;
-  flex-shrink: 0;
-}
-
-/* Social Links */
-.social-links {
-  display: flex;
-  gap: 16px;
-  margin: 20px 0;
-}
-
-.social-links a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.social-links a:hover {
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(13, 71, 21, 0.3);
-}
-
-/* Newsletter */
-.newsletter p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
-  margin: 16px 0 12px;
-}
-
-.newsletter-input {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.newsletter-input input {
-  flex: 1;
-  padding: 10px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 14px;
-}
-
-.newsletter-input input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.newsletter-input input:focus {
-  outline: none;
-  border-color: #0D4715;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.newsletter-input button {
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #0D4715 0%, #1a7a2e 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.newsletter-input button:hover {
-  background: linear-gradient(135deg, #1a7a2e 0%, #0D4715 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(13, 71, 21, 0.3);
-}
-
-/* Footer Bottom */
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.footer-bottom p {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  margin: 0;
-}
-
-.footer-bottom-links {
-  display: flex;
-  gap: 24px;
-}
-
-.footer-bottom-links a {
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-.footer-bottom-links a:hover {
-  color: white;
-}
-
-/* Transitions */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.fade-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .navbar .container {
-    position: relative;
-  }
-
-  .mobile-menu-toggle {
-    display: flex;
-  }
-
-  .nav-links {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    flex-direction: column;
-    padding: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-    gap: 15px;
-    align-items: flex-start;
-  }
-
-  .nav-links.mobile-open {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .nav-links a, .nav-links .cta-btn {
-    width: 100%;
-    text-align: left;
-    padding: 10px 0;
-  }
-
-  .hero .container {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-title {
-    font-size: 36px;
-  }
-
-  .flow-steps {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-cta {
-    flex-direction: column;
-  }
-
-  .btn-primary, .btn-secondary {
-    width: 100%;
-  }
-
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pricing-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pricing-card.popular {
-    transform: none;
-  }
-
-  .pricing-card.popular:hover {
-    transform: translateY(-5px);
-  }
-
-  /* Footer Mobile */
-  .footer {
-    padding: 40px 0 20px;
-    margin-top: 40px;
-  }
-
-  .footer-content {
-    grid-template-columns: 1fr;
-    gap: 30px;
-    margin-bottom: 30px;
-  }
-
-  .company-info {
-    text-align: center;
-  }
-
-  .company-info .footer-logo {
-    justify-content: center;
-  }
-
-  .social-links {
-    justify-content: center;
-  }
-
-  .newsletter-input {
-    flex-direction: column;
-  }
-
-  .newsletter-input button {
-    width: 100%;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    text-align: center;
-    gap: 16px;
-  }
-
-  .footer-bottom-links {
-    justify-content: center;
-  }
-}
+.animate-fade-up { animation: fade-up 0.8s ease-out forwards; }
+.animate-fade-up-short { animation: fade-up-short 0.4s ease-out forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-bounce-subtle { animation: bounce-subtle 3s ease-in-out infinite; }
 </style>
