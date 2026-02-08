@@ -50,28 +50,34 @@ echo "  Port: $DB_PORT"
 echo "  User: $DB_USERNAME"
 echo "  DB:   $DB_DATABASE"
 
+echo "  Proxy variables:"
+env | grep -i proxy || echo "     None"
+
 echo "Network Diagnostics:"
-echo "  1. Testing internet connectivity (ping 8.8.8.8)..."
-ping -c 1 -W 2 8.8.8.8 > /dev/null 2>&1 && echo "     SUCCESS: Can ping 8.8.8.8" || echo "     FAILED: Cannot ping 8.8.8.8"
+echo "  1. Internet (8.8.8.8):"
+ping -c 1 -W 2 8.8.8.8 > /dev/null 2>&1 && echo "     SUCCESS" || echo "     FAILED"
 
-echo "  2. Testing DNS (ping google.com)..."
-ping -c 1 -W 2 google.com > /dev/null 2>&1 && echo "     SUCCESS: Can resolve and ping google.com" || echo "     FAILED: DNS or internet issue"
+echo "  2. DNS (google.com):"
+ping -c 1 -W 2 google.com > /dev/null 2>&1 && echo "     SUCCESS" || echo "     FAILED"
 
-echo "  3. Testing DB Host connectivity (ping $DB_HOST)..."
-ping -c 1 -W 2 $DB_HOST > /dev/null 2>&1 && echo "     SUCCESS: Can ping $DB_HOST" || echo "     FAILED: Cannot ping $DB_HOST"
+echo "  3. DB Host ($DB_HOST):"
+ping -c 1 -W 2 $DB_HOST > /dev/null 2>&1 && echo "     SUCCESS" || echo "     FAILED"
 
-echo "  4. Testing DB Port (nc -zv $DB_HOST $DB_PORT)..."
-if nc -zv -w 5 $DB_HOST $DB_PORT 2>&1; then
-    echo "     SUCCESS: Port $DB_PORT is OPEN on $DB_HOST"
-else
-    echo "     FAILED: Port $DB_PORT is CLOSED or FILTERED"
-fi
+echo "  4. MTU Test (1472 bytes):"
+ping -c 1 -W 2 -s 1472 $DB_HOST > /dev/null 2>&1 && echo "     SUCCESS (MTU ok)" || echo "     FAILED (Possible MTU issue)"
 
-echo "  Container IP Info:"
-ip addr show eth0 | grep "inet " || ip addr | grep "inet "
-    
+echo "  5. Target Port ($DB_PORT):"
+nc -znv -w 5 $DB_HOST $DB_PORT 2>&1 || echo "     FAILED (Timed out)"
+
+echo "  6. Other Ports on $DB_HOST:"
+for p in 3306 8443 80 443; do
+    nc -znv -w 1 $DB_HOST $p 2>&1 | grep -q "succeeded" && echo "     NOTE: Port $p is OPEN"
+done
+
 echo "  Routing Table:"
 route -n || netstat -rn
+echo "  IP Addr:"
+ip addr | grep "inet "
 
 # Multi-attempt PHP connection check
 echo "Starting database connection attempts..."
