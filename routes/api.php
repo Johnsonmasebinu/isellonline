@@ -15,3 +15,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::match(['get', 'post'], 'whatsapp/webhook', [WhatsAppController::class, 'webhook']);
+Route::get('whatsapp/logs', [WhatsAppController::class, 'logs']);
