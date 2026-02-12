@@ -12,9 +12,9 @@ class WhatsAppController extends Controller
         if ($request->isMethod('get')) {
             // Verification
             if ($request->hub_mode == 'subscribe' && $request->hub_verify_token == config('whatsapp.verify_token')) {
-                return response()->json(['hub_challenge' => $request->hub_challenge]);
+                return response($request->hub_challenge, 200)->header('Content-Type', 'text/plain');
             }
-            return response()->json(['error' => 'Forbidden'], 403);
+            return response('Forbidden', 403);
         }
 
         if ($request->isMethod('post')) {
