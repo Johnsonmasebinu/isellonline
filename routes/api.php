@@ -16,3 +16,4 @@ Route::get('/user', function (Request $request) {
 
 Route::match(['get', 'post'], 'whatsapp/webhook', [WhatsAppController::class, 'webhook']);
 Route::get('whatsapp/logs', [WhatsAppController::class, 'logs']);
+Route::delete('whatsapp/logs', [WhatsAppController::class, 'clearLogs']);

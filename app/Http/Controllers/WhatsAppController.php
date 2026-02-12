@@ -71,6 +71,15 @@ class WhatsAppController extends Controller
         return response()->json($logs);
     }
 
+    public function clearLogs()
+    {
+        $path = Storage::path('logs/whatsapp.json');
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        return response()->json(['message' => 'Logs cleared']);
+    }
+
     private function logActivity($data)
     {
         $path = Storage::path('logs/whatsapp.json');
