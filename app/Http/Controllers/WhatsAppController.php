@@ -140,6 +140,24 @@ class WhatsAppController extends Controller
         if (file_exists($path)) {
             return response()->download($path);
         }
-        return response()->json(['error' => 'Log file not found'], 404);
+
+        $logPath = storage_path('logs');
+        $files = glob($logPath . '/laravel-*.log');
+        
+        if (!empty($files)) {
+            // Sort by modified time, newest first
+            usort($files, function ($a, $b) {
+                return filemtime($b) - filemtime($a);
+            });
+            return response()->download($files[0]);
+        }
+
+        // Diagnostic info
+        $allFiles = glob($logPath . '/*');
+        return response()->json([
+            'error' => 'Log file not found',
+            'scanned_path' => $logPath,
+            'available_files' => array_map('basename', $allFiles ?: [])
+        ], 404);
     }
 }
