@@ -10,6 +10,8 @@ class WhatsAppController extends Controller
 {
     public function webhook(Request $request)
     {
+        $this->logActivity(['type' => 'webhook_request', 'method' => $request->method(), 'headers' => $request->headers->all(), 'data' => $request->all(), 'timestamp' => now()]);
+
         if ($request->isMethod('get')) {
             // Verification
             if ($request->hub_mode == 'subscribe' && $request->hub_verify_token == config('whatsapp.verify_token')) {
