@@ -309,9 +309,9 @@
         <div class="pt-10 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6 lg:gap-8">
           <p class="text-gray-400 font-bold uppercase text-[10px] tracking-widest text-center lg:text-left">&copy; 2026 ISellOnline AI. Deepmind Research Tool.</p>
           <div class="flex gap-6 lg:gap-10">
-            <a href="#" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Privacy</a>
-            <a href="#" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Terms</a>
-            <a href="#" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Status</a>
+            <a href="/privacy" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Privacy</a>
+            <a href="/terms" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Terms</a>
+            <a href="/user-data-deletion" class="text-[10px] text-gray-400 font-bold hover:text-gray-900 uppercase tracking-widest">Data Deletion</a>
           </div>
         </div>
       </div>
@@ -487,9 +487,9 @@ const footerLinks = {
     { name: 'Support', href: '#' }
   ],
   'Support': [
-    { name: 'Privacy', href: '#' },
-    { name: 'Terms', href: '#' },
-    { name: 'Security', href: '#' },
+    { name: 'Privacy', href: '/privacy' },
+    { name: 'Terms', href: '/terms' },
+    { name: 'Data Deletion', href: '/user-data-deletion' },
     { name: 'Contact', href: '#contact' }
   ]
 };
