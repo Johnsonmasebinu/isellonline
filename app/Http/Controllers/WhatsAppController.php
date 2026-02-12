@@ -56,7 +56,7 @@ class WhatsAppController extends Controller
 
     public function logs()
     {
-        $path = storage_path('logs/whatsapp.json');
+        $path = Storage::path('logs/whatsapp.json');
         if (!file_exists($path)) {
             return response()->json([]);
         }
@@ -73,6 +73,11 @@ class WhatsAppController extends Controller
 
     private function logActivity($data)
     {
-        Storage::append('logs/whatsapp.json', json_encode($data));
+        $path = Storage::path('logs/whatsapp.json');
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        file_put_contents($path, json_encode($data) . "\n", FILE_APPEND | LOCK_EX);
     }
 }
