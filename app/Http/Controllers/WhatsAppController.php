@@ -31,7 +31,7 @@ class WhatsAppController extends Controller
                 $from = $data['entry'][0]['changes'][0]['value']['messages'][0]['from'];
 
                 // Send reply
-                Http::withHeaders([
+                $sendResponse = Http::withHeaders([
                     'Authorization' => 'Bearer ' . config('whatsapp.access_token'),
                     'Content-Type' => 'application/json',
                 ])->post("https://graph.facebook.com/v18.0/{$phoneNumberId}/messages", [
@@ -41,7 +41,13 @@ class WhatsAppController extends Controller
                     'text' => ['body' => 'Hi, Welcome To IsellOnline, Nigerian First E-commerce store creator']
                 ]);
 
-                $this->logActivity(['type' => 'reply_sent', 'to' => $from, 'message' => 'Hi, Welcome To IsellOnline, Nigerian First E-commerce store creator', 'timestamp' => now()]);
+                $this->logActivity(['type' => 'send_response', 'response' => $sendResponse->json(), 'status' => $sendResponse->status(), 'timestamp' => now()]);
+
+                if ($sendResponse->successful()) {
+                    $this->logActivity(['type' => 'reply_sent', 'to' => $from, 'message' => 'Hi, Welcome To IsellOnline, Nigerian First E-commerce store creator', 'timestamp' => now()]);
+                } else {
+                    $this->logActivity(['type' => 'reply_failed', 'to' => $from, 'error' => $sendResponse->json(), 'timestamp' => now()]);
+                }
             }
 
             return response()->json(['status' => 'OK']);
