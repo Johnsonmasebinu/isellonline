@@ -5,20 +5,45 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class WhatsAppController extends Controller
 {
     public function webhook(Request $request)
     {
-        $this->logActivity(['type' => 'webhook_request', 'method' => $request->method(), 'headers' => $request->headers->all(), 'data' => $request->all(), 'timestamp' => now()]);
+        Log::info('WhatsApp Webhook Incoming Request', [
+            'method' => $request->method(),
+            'ip' => $request->ip(),
+            'headers' => $request->headers->all(),
+            'raw_content' => $request->getContent()
+        ]);
+
+        try {
+            $this->logActivity([
+                'type' => 'webhook_request',
+                'method' => $request->method(),
+                'headers' => $request->headers->all(),
+                'data' => $request->all(),
+                'timestamp' => now()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to log activity: ' . $e->getMessage());
+        }
 
         if ($request->isMethod('get')) {
             // Verification
             if ($request->hub_mode == 'subscribe' && $request->hub_verify_token == config('whatsapp.verify_token')) {
-                $this->logActivity(['type' => 'verification', 'status' => 'success', 'challenge' => $request->hub_challenge, 'timestamp' => now()]);
+                try {
+                    $this->logActivity(['type' => 'verification', 'status' => 'success', 'challenge' => $request->hub_challenge, 'timestamp' => now()]);
+                } catch (\Exception $e) {}
+                
                 return response($request->hub_challenge, 200)->header('Content-Type', 'text/plain');
             }
-            $this->logActivity(['type' => 'verification', 'status' => 'failed', 'params' => $request->all(), 'timestamp' => now()]);
+            
+            try {
+                $this->logActivity(['type' => 'verification', 'status' => 'failed', 'params' => $request->all(), 'timestamp' => now()]);
+            } catch (\Exception $e) {}
+
             return response('Forbidden', 403);
         }
 
@@ -26,34 +51,51 @@ class WhatsAppController extends Controller
             // Handle incoming messages
             $data = $request->all();
 
-            $this->logActivity(['type' => 'message_received', 'data' => $data, 'timestamp' => now()]);
+            try {
+                $this->logActivity(['type' => 'message_received', 'data' => $data, 'timestamp' => now()]);
+            } catch (\Exception $e) {}
 
             if (isset($data['entry'][0]['changes'][0]['value']['messages'])) {
                 $phoneNumberId = $data['entry'][0]['changes'][0]['value']['metadata']['phone_number_id'];
-                $from = $data['entry'][0]['changes'][0]['value']['messages'][0]['from'];
+                $contact = $data['entry'][0]['changes'][0]['value']['messages'][0]['from']; // 'from' might be nested differently, usually messages[0]['from']
+                $messageBody = $data['entry'][0]['changes'][0]['value']['messages'][0]['text']['body'] ?? '';
+
+                 // Log message extraction
+                Log::info('WhatsApp Message Extracted', ['phone_number_id' => $phoneNumberId, 'from' => $contact, 'body' => $messageBody]);
 
                 // Send reply
-                $sendResponse = Http::withHeaders([
+                $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . config('whatsapp.access_token'),
                     'Content-Type' => 'application/json',
                 ])->post("https://graph.facebook.com/v18.0/{$phoneNumberId}/messages", [
                     'messaging_product' => 'whatsapp',
-                    'to' => $from,
+                    'to' => $contact,
                     'type' => 'text',
                     'text' => ['body' => 'Hi, Welcome To IsellOnline, Nigerian First E-commerce store creator']
                 ]);
 
-                $this->logActivity(['type' => 'send_response', 'response' => $sendResponse->json(), 'status' => $sendResponse->status(), 'timestamp' => now()]);
+                try {
+                    $this->logActivity(['type' => 'send_response', 'response' => $response->json(), 'status' => $response->status(), 'timestamp' => now()]);
+                } catch (\Exception $e) {}
 
-                if ($sendResponse->successful()) {
-                    $this->logActivity(['type' => 'reply_sent', 'to' => $from, 'message' => 'Hi, Welcome To IsellOnline, Nigerian First E-commerce store creator', 'timestamp' => now()]);
+                if ($response->successful()) {
+                    try {
+                        $this->logActivity(['type' => 'reply_sent', 'to' => $contact, 'message' => 'Hi, Welcome To IsellOnline, Nigerian First E-commerce store creator', 'timestamp' => now()]);
+                    } catch (\Exception $e) {}
                 } else {
-                    $this->logActivity(['type' => 'reply_failed', 'to' => $from, 'error' => $sendResponse->json(), 'timestamp' => now()]);
+                    Log::error('WhatsApp Reply Failed', ['response' => $response->body()]);
+                    try {
+                        $this->logActivity(['type' => 'reply_failed', 'to' => $contact, 'error' => $response->json(), 'timestamp' => now()]);
+                    } catch (\Exception $e) {}
                 }
+            } else {
+                Log::info('No messages found in webhook payload', ['data' => $data]);
             }
 
             return response()->json(['status' => 'OK']);
         }
+        
+        return response()->json(['status' => 'Method Not Allowed'], 405);
     }
 
     public function logs()
@@ -90,5 +132,14 @@ class WhatsAppController extends Controller
             mkdir($dir, 0755, true);
         }
         file_put_contents($path, json_encode($data) . "\n", FILE_APPEND | LOCK_EX);
+    }
+
+    public function downloadLaravelLog()
+    {
+        $path = storage_path('logs/laravel.log');
+        if (file_exists($path)) {
+            return response()->download($path);
+        }
+        return response()->json(['error' => 'Log file not found'], 404);
     }
 }
