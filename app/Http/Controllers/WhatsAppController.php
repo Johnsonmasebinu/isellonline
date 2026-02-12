@@ -136,28 +136,52 @@ class WhatsAppController extends Controller
 
     public function downloadLaravelLog()
     {
-        $path = storage_path('logs/laravel.log');
-        if (file_exists($path)) {
-            return response()->download($path);
-        }
+        // Force a log entry to test logging system
+        Log::info('Debug: Diagnostic log check initiated at ' . now());
 
-        $logPath = storage_path('logs');
-        $files = glob($logPath . '/laravel-*.log');
-        
-        if (!empty($files)) {
-            // Sort by modified time, newest first
-            usort($files, function ($a, $b) {
+        $candidates = [
+            storage_path('logs/laravel.log'),
+            storage_path('app/private/logs/whatsapp.json'),
+            Storage::path('logs/whatsapp.json'), // Resolves based on default disk
+        ];
+
+        // Check for daily logs in standard location
+        $dailyLogs = glob(storage_path('logs/laravel-*.log'));
+        if (!empty($dailyLogs)) {
+            // Sort newest first
+            usort($dailyLogs, function ($a, $b) {
                 return filemtime($b) - filemtime($a);
             });
-            return response()->download($files[0]);
+            $candidates = array_merge($candidates, $dailyLogs);
         }
 
-        // Diagnostic info
-        $allFiles = glob($logPath . '/*');
+        // Try to download the first existing file found
+        foreach ($candidates as $path) {
+            if (file_exists($path)) {
+                return response()->download($path);
+            }
+        }
+
+        // Diagnostic: Recursive scan of storage folder
+        $foundFiles = [];
+        try {
+            $flags = \FilesystemIterator::SKIP_DOTS;
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(storage_path(), $flags), \RecursiveIteratorIterator::SELF_FIRST);
+            
+            foreach ($iterator as $file) {
+                if ($file->isFile() && in_array($file->getExtension(), ['log', 'json', 'txt'])) {
+                    $foundFiles[] = $file->getPathname();
+                }
+            }
+        } catch (\Exception $e) {
+            $foundFiles[] = 'Error scanning: ' . $e->getMessage();
+        }
+
         return response()->json([
-            'error' => 'Log file not found',
-            'scanned_path' => $logPath,
-            'available_files' => array_map('basename', $allFiles ?: [])
+            'error' => 'No relevant log files found',
+            'candidates_checked' => array_unique($candidates),
+            'storage_permissions' => substr(sprintf('%o', fileperms(storage_path())), -4),
+            'all_storage_files' => $foundFiles
         ], 404);
     }
 }
